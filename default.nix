@@ -1,4 +1,4 @@
-{ pkgs ? import (builtins.fetchTarball "https://d3g5gsiof5omrk.cloudfront.net/nixos/16.09/nixos-16.09.1445.e9a8853/nixexprs.tar.xz") {}, 
+{ pkgs ? import ./nixpkgs.nix, 
   customVarsPath ? ./custom_vars.nix, vars_override ? null }:
 
 let
