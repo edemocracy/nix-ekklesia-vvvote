@@ -18,13 +18,9 @@ require_once __DIR__ . '/../Math/BigInteger.php';
 require_once __DIR__ . '/../tools.php';
 require_once __DIR__ . '/../rsaMyExts.php';
 
-/*
- * The only change you need to make in this file is: adjust the urls of servers
- * include 'backend' here without trailing slash
- */
-$pServerUrlBases = array('http://demo.vvvote.de/backend', 'http://demo2.vvvote.de/backend'); // without trailing slash
-
-$tServerStoreVotePort = '80'; //do not use https here to enable the anonymizer-server to strip the browser-fingerprint - this is not necessary if all voters would use the tor browser bundle
+// config
+$pServerUrlBases = array('${backend_url_1}', '${backend_url_2}');
+$tServerStoreVotePort = '${toString vote_port}'; 
 
 
 // construct tServerUrl for the webclient use 

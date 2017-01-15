@@ -23,9 +23,14 @@ stdenv.mkDerivation rec {
       embed = {
         configureFlags = [ "--enable-embed" ];
       };
+
+      phpdbg = {
+        configureFlags = [ "--enable-phpdbg" ];
+      };
     };
 
     cfg = {
+      phpdbgSupport = true;
       embedSupport = true;
       apxs2Support = false;
       imapSupport = false;

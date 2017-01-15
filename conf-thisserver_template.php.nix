@@ -11,39 +11,36 @@ if(count(get_included_files()) < 2) {
 	exit;
 }
 
-/*********************************************************
-*  Change the settings to match your database account
-*/
+
+// general config
+$debug     = ${if debug then "true" else "false"};
+$serverNo = ${toString server_number};
+
+
+// DB config
 $dbInfos = array(
 		'dbtype'  => 'mysql',
-		'dbhost'  => 'localhost',
-		'dbuser'  => 'root',
-		'dbpassw' => 'bernAl821',
-		'dbname'  => 'election_server1',
-		'prefix'  => 'el1_'
+		'dbhost'  => '${db.host}',
+		'dbuser'  => '${db.user}',
+		'dbpassw' => '${db.password}',
+		'dbname'  => '${db.name}',
+		'prefix'  => '${db.prefix}'
 );
 
-$debug     = true;
 
-/*
- * Beyond this point in this file, you only need to make changes if you want to configure OAuth2 or externalToken-Auth
-************************************************************/
-
+// key loading
 require_once __DIR__ . '/../rsaMyExts.php';
 
-date_default_timezone_set('Europe/Berlin'); // this is only used to avoid a warning message from PHP -> you do not need to adjust it. All dates are in UTC or use explicit time zone offset.
+date_default_timezone_set('Europe/Berlin');
 
-$webclientUrlbase = '../webclient'; // relativ to backend or absolute, no trailing slash
+$webclientUrlbase = '../webclient'; // ?
 
-$serverNo = 1;
-
-// load private key
 function loadprivatekey($typePrefix, $serverNo, array $publickeys) {
 
   $serverkey = Array();
   $serverkey['serverName'] = $typePrefix . $serverNo;
 
-  $privateKeyStrWraped = file_get_contents(__DIR__ . "/$typePrefix${serverNo}.privatekey.pem.php");
+  $privateKeyStrWraped = file_get_contents(__DIR__ . "/" . $typePrefix . "${toString server_number}.privatekey.pem.php");
   // extract the key from that file (when created with admin.php there are php markers around it in order to make apache execute it instead of delivering it)
   $privateKeyStr =  preg_replace('/.*(-----BEGIN RSA PRIVATE KEY-----(.*)-----END RSA PRIVATE KEY-----).*/mDs', '$1', $privateKeyStrWraped);
   $serverkey['privatekey'] = $privateKeyStr;
@@ -62,6 +59,7 @@ function loadprivatekey($typePrefix, $serverNo, array $publickeys) {
   if ($test !== 0) throw ('internal server configuration error: .publickey does not match the .privatekey for ' . $serverkey['serverName']);
   return $serverkey;
 }
+
 $urltmp = parse_url($pServerUrlBases[$serverNo -1]);
 if (! isset($urltmp['port']) || ($urltmp['port'] == 0)) {
 	switch ($urltmp['scheme']) {
@@ -75,9 +73,9 @@ if (! isset($urltmp['port']) || ($urltmp['port'] == 0)) {
 // OAuth 2.0 config
 $configUrlBase = $pServerUrlBases[$serverNo -1];
 $oauthBEObayern = array(
-    'serverId'      => 'BEOBayern',
-    'client_id'     => 'vvvote',
-    'client_secret' => 'your_client_secret',
+    'serverId'      => '${oauth.server_id}',
+    'client_id'     => '${oauth.client_id}',
+    'client_secret' => '${oauth.client_secret}',
     'redirect_uri'  => $configUrlBase . '/modules-auth/oauth/callback.php',
     'mail_identity' => 'voting', // this is used for the sendmail_endp and determines which sender will be used for the mail 
     'mail_sign_it'  => true,     // wheather the mail should be signed by the id server 
@@ -86,19 +84,16 @@ $oauthBEObayern = array(
         'body'    => "Hallo!\r\n\r\nSie haben für die Abstimmung >" . '$electionId' . "< einen Wahlschein erstellt.\r\nFalls dies nicht zutreffen sollte, wenden Sie sich bitte umgehend an einen Abstimmungsverantwortlichen.\r\n\r\nFreundliche Grüße\r\nDas Wahlteam\r\n"
         ),
     
-    'authorization_endp'    => 'https://beoauth.piratenpartei-bayern.de/oauth2/authorize/',
-    'token_endp'            => 'https://beoauth.piratenpartei-bayern.de/oauth2/token/',
-    'get_profile_endp'      => 'https://beoauth.piratenpartei-bayern.de/api/v1/user/profile/', /* not needed at the moment */
-    'is_in_voter_list_endp' => 'https://beoauth.piratenpartei-bayern.de/api/v1/user/listmember/',
-    'get_membership_endp'   => 'https://beoauth.piratenpartei-bayern.de/api/v1/user/membership/',
-    'get_auid_endp'			=> 'https://beoauth.piratenpartei-bayern.de/api/v1/user/auid/',
-    'sendmail_endp'			=> 'https://beoauth.piratenpartei-bayern.de/api/v1/user/mails/'
+    'authorization_endp'    => '${oauth.endpoints.authorization}',
+    'token_endp'            => '${oauth.endpoints.token}',
+    'is_in_voter_list_endp' => '${oauth.endpoints.is_in_voter_list}',
+    'get_membership_endp'   => '${oauth.endpoints.get_membership}',
+    'get_auid_endp'			=> '${oauth.endpoints.get_auid}',
+    'sendmail_endp'			=> '${oauth.endpoints.sendmail}'
 );
+
 $oauthConfig = array($oauthBEObayern['serverId'] => $oauthBEObayern);
-
-
 $pserverkey = loadprivatekey('PermissionServer', $serverNo, $pServerKeys);
-// only needed for a tally server, option
-$tserverkey = loadprivatekey('TallyServer',      $serverNo, $tServerKeys); // TODO use separate numeration for tally and permission servers
+${if is_tally_server then "$tserverkey = loadprivatekey('TallyServer', $serverNo, $tServerKeys);" else ""}
 ?>
 ''
