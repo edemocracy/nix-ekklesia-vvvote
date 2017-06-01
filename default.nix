@@ -58,7 +58,8 @@ vvvoteBackend = pkgs.stdenv.mkDerivation {
 uwsgiConfig = pkgs.writeText "vvvote-uwsgi-config.ini" ''
   [uwsgi]
   plugins = 0:php
-  socket = :8000
+  socket = ${vars.uwsgi.socket}
+  http = ${vars.uwsgi.http}
   project_dir = ${vvvoteBackend}
   php-docroot = %(project_dir)
   php-allowed-ext = .php

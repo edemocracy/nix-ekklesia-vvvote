@@ -15,7 +15,12 @@ in rec {
     port = "3307";
     user = "vvvote";
     password = "vvvote";
-    prefix = "el${toString server_number}_";
+    prefix = "";
+  };
+
+  uwsgi = {
+    socket = ":20001";
+    http = ":10001";
   };
 
   oauth = {
