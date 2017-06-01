@@ -77,7 +77,7 @@ adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
 
 
 in pkgs.stdenv.mkDerivation {
-  name = "vvvoteconf";
+  name = "nix-ekklesia-vvvote";
   # only run needed phases because unpack fails when src isn't given
   phases = [ "installPhase" "fixupPhase" ];
   installPhase = ''
