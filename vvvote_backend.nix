@@ -37,10 +37,10 @@ pkgs.stdenv.mkDerivation {
     ${lib.concatMapStringsSep "\n" (k: "ln -s ${k} $config_dir") publicKeyFiles}
     # link private keys
     ln -s ${keydir}/PermissionServer${toString vars.server_number}.privatekey.pem.php $config_dir
+    ln -s ${keydir}/TallyServer${toString vars.tally_server_number}.publickey $config_dir
     set +x
   '' 
   + lib.optionalString (vars.keydir != null && vars.is_tally_server) ''
     ln -s ${keydir}/TallyServer${toString vars.server_number}.privatekey.pem.php $config_dir
-    ln -s ${keydir}/TallyServer${toString vars.server_number}.publickey $config_dir
   '';
 }

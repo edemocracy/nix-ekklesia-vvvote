@@ -6,8 +6,10 @@ self: {
   backend_urls = [ "http://localhost:10001/" "http://localhost:10002/" ];
   id_server_url = "https://id.localhost";
 
-  is_tally_server = true;
-  vote_port = 80;
+  tally_server_number = 1; # which server acts as tally server? (starts at 1!)
+  vote_port = 10001;
+
+  is_tally_server = self.tally_server_number == self.server_number;
 
   db = {
     name = "vvvote";
