@@ -1,8 +1,8 @@
 { pkgs, lib, vars }:
 
 let 
-thisConfig = scopedImport { inherit vars lib; } ./conf-thisserver_template.php.nix;
-allConfig = scopedImport { inherit vars lib; } ./conf-allservers_template.php.nix;
+thisConfig = scopedImport { inherit vars lib; } ./conf-thisserver.php.nix;
+allConfig = scopedImport { inherit vars lib; } ./conf-allservers.php.nix;
 
 thisConfigFile = pkgs.writeText "conf-thisserver.php" thisConfig;
 allConfigFile = pkgs.writeText "conf-allservers.php" allConfig;
@@ -10,7 +10,6 @@ keydir = toString vars.keydir;
 
 publicKeyFiles = if (vars.keydir == null) then [] else
   map (i: "${keydir}/PermissionServer${toString i}.publickey") (lib.range 1 (builtins.length vars.backend_urls));
-
 
 in 
 pkgs.stdenv.mkDerivation {
@@ -22,9 +21,7 @@ pkgs.stdenv.mkDerivation {
     sha256 = "0la05r2lkgs9dips2c3fj6wdlqphjjnvj9f5ld22lhgcji7kvf1p";
   };
 
-  propagatedBuildInputs = [];
-
-  dontBuild = true;
+  dontBuild = true; # nothing to build for this PHP app ;)
   installPhase = ''
     set -x
     config_dir=$out/config

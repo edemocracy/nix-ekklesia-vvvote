@@ -1,7 +1,8 @@
 self: {
   debug = true;
   keydir = null;
-  server_number = 1;
+  server_number = 1; # position of this server, starts with 1
+  # urls for the backend servers. The first server is pos 1, the second pos 2 and so on.
   backend_urls = [ "http://localhost:10001/" "http://localhost:10002/" ];
   id_server_url = "https://id.localhost";
 

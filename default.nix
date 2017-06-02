@@ -26,7 +26,7 @@ vars = if vars_override != null then vars_override
 
 vvvoteBackend = pkgs.callPackage ./vvvote_backend.nix { inherit vars; };
 
-uwsgiConfig = pkgs.writeText "vvvote-uwsgi-config.ini" ''
+uwsgiConfig = pkgs.writeText "vvvote_backend-uwsgi.ini" ''
   [uwsgi]
   plugins = 0:php
   socket = ${vars.uwsgi.socket}
@@ -37,7 +37,7 @@ uwsgiConfig = pkgs.writeText "vvvote-uwsgi-config.ini" ''
   php-allowed-ext = .inc
 '';
 
-startscript = pkgs.writeScriptBin "vvvote-uwsgi.sh" ''
+startscript = pkgs.writeScriptBin "vvvote_backend-uwsgi.sh" ''
   ${uwsgi}/bin/uwsgi ${uwsgiConfig} "$@"
 '';
 
@@ -47,6 +47,7 @@ adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
   ${php}/bin/php -f admin.php "$@"
 '';
 
+varsForDebugOutput = removeAttrs vars ["__unfix__"];
 
 in pkgs.stdenv.mkDerivation {
   name = "nix-ekklesia-vvvote";
@@ -54,10 +55,13 @@ in pkgs.stdenv.mkDerivation {
   phases = [ "installPhase" "fixupPhase" ];
   installPhase = ''
     mkdir -p $out/bin
-    ln -s ${startscript}/bin/vvvote-uwsgi.sh $out/bin/
+    ln -s ${startscript}/bin/vvvote_backend-uwsgi.sh $out/bin/
     ln -s ${adminscript}/bin/vvvote-admin.sh $out/bin/
-    
+
+    # not needed in production, but helpful for debugging
+    ln -s ${uwsgiConfig} $out/vvvote_backend-uwsgi.ini
     ln -s ${vvvoteBackend} $out/vvvote_backend
+    ln -s ${pkgs.writeText "config.json" (builtins.toJSON varsForDebugOutput)} $out/config.json
   '';
 
   shellHook = ''
