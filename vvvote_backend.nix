@@ -21,11 +21,13 @@ pkgs.stdenv.mkDerivation {
     sha256 = "0la05r2lkgs9dips2c3fj6wdlqphjjnvj9f5ld22lhgcji7kvf1p";
   };
 
+  patches = [ ./0001-always-use-internal-ssl.patch ];
+
   dontBuild = true; # nothing to build for this PHP app ;)
   installPhase = ''
     set -x
     config_dir=$out/config
-    cp -r $src/backend $out
+    cp -r backend $out
     chmod u+w -R $out
     # linking doesn't work because PHP uses the location of the real file for __DIR__
     cp ${thisConfigFile} $config_dir/conf-thisserver.php
