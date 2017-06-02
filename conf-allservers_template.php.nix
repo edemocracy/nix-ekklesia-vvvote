@@ -19,7 +19,7 @@ require_once __DIR__ . '/../tools.php';
 require_once __DIR__ . '/../rsaMyExts.php';
 
 // config
-$pServerUrlBases = array('${backend_url_1}', '${backend_url_2}');
+$pServerUrlBases = array(${lib.concatMapStringsSep ", " (url: "'${url}'") backend_urls});
 $tServerStoreVotePort = '${toString vote_port}'; 
 
 

@@ -1,11 +1,10 @@
-let base_url = "https://id.localhost";
-in rec {
+self: {
   debug = true;
-  server_number = 1;
-  number_of_servers = 2;
   keydir = null;
-  backend_url_1 = "http://localhost:10001/";
-  backend_url_2 = "http://localhost:10002/";
+  server_number = 1;
+  backend_urls = [ "http://localhost:10001/" "http://localhost:10002/" ];
+  id_server_url = "https://id.localhost";
+
   is_tally_server = true;
   vote_port = 80;
 
@@ -28,12 +27,12 @@ in rec {
     client_id = "vvvote";
     client_secret = "vvvote";
     endpoints = {
-      authorization = base_url + "/oauth/authorize/";
-      token = base_url + "/oauth/token/";
-      is_in_voter_list = base_url + "/api/v1/user/listmember/";
-      get_membership = base_url + "/api/v1/user/membership/";
-      get_auid = base_url + "/api/v1/user/auid/";
-      sendmail = base_url + "/api/v1/user/mails/";
+      authorization = self.id_server_url + "/oauth/authorize/";
+      token = self.id_server_url + "/oauth/token/";
+      is_in_voter_list = self.id_server_url + "/api/v1/user/listmember/";
+      get_membership = self.id_server_url + "/api/v1/user/membership/";
+      get_auid = self.id_server_url + "/api/v1/user/auid/";
+      sendmail = self.id_server_url + "/api/v1/user/mails/";
     };
   };
 }
