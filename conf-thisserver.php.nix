@@ -33,7 +33,7 @@ require_once __DIR__ . '/../rsaMyExts.php';
 
 date_default_timezone_set('Europe/Berlin');
 
-$webclientUrlbase = '../webclient'; // ?
+$webclientUrlbase = '${webclient_url}';
 
 function loadprivatekey($typePrefix, $serverNo, array $publickeys) {
 
