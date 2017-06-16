@@ -25,6 +25,7 @@ vars = if vars_override != null then vars_override
   else lib.fix' (extendsRec (scopedImport { inherit pkgs lib composeConfig; } customVarsPath) (import ./default_vars.nix) );
 
 vvvoteBackend = pkgs.callPackage ./vvvote_backend.nix { inherit vars; };
+vvvoteFrontend = pkgs.callPackage ./vvvote_frontend.nix { inherit vars; };
 
 uwsgiConfig = pkgs.writeText "vvvote_backend-uwsgi.ini" ''
   [uwsgi]
@@ -47,6 +48,30 @@ adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
   ${php}/bin/php -f admin.php "$@"
 '';
 
+frontendScript = pkgs.writeScriptBin "vvvote_frontend-server.py" ''
+  #!/usr/bin/env python3
+  import http.server
+  import socketserver
+  import os
+
+  PORT = ${toString vars.webclient_port}
+  os.chdir("${vvvoteFrontend}")
+
+  class Handler(http.server.SimpleHTTPRequestHandler):
+      def end_headers(self):
+          self.send_custom_headers()
+          super().end_headers()
+
+      def send_custom_headers(self):
+          self.send_header("Access-Control-Allow-Origin", "*")
+
+
+  with socketserver.TCPServer(("", PORT), Handler) as httpd:
+      print("serving at port", PORT)
+      httpd.serve_forever()
+'';
+
+
 varsForDebugOutput = removeAttrs vars ["__unfix__"];
 
 in pkgs.stdenv.mkDerivation {
@@ -57,10 +82,12 @@ in pkgs.stdenv.mkDerivation {
     mkdir -p $out/bin
     ln -s ${startscript}/bin/vvvote_backend-uwsgi.sh $out/bin/
     ln -s ${adminscript}/bin/vvvote-admin.sh $out/bin/
+    ln -s ${frontendScript}/bin/vvvote_frontend-server.py $out/bin/
 
     # not needed in production, but helpful for debugging
     ln -s ${uwsgiConfig} $out/vvvote_backend-uwsgi.ini
     ln -s ${vvvoteBackend} $out/vvvote_backend
+    ln -s ${vvvoteFrontend} $out/vvvote_frontend
     ln -s ${pkgs.writeText "config.json" (builtins.toJSON varsForDebugOutput)} $out/config.json
   '';
 

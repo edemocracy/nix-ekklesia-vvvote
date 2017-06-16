@@ -8,6 +8,8 @@ self: {
 
   tally_server_number = 1; # which server acts as tally server? (starts at 1!)
   vote_port = 10001;
+  webclient_port = 10003;
+  webclient_url = "http://localhost:${toString self.webclient_port}";
 
   is_tally_server = self.tally_server_number == self.server_number;
 
