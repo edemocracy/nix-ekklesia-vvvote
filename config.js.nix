@@ -47,7 +47,7 @@ ClientConfig.getResultUrl      = server1url + 'getresult.php'; //?XDEBUG_SESSION
 
 
 ClientConfig.anonymizerUrl = 'http://anonymouse.org/cgi-bin/anon-www_de.cgi/'; // used to change the ip and to strip browser infos / with trailing slash
-ClientConfig.voteClientUrl = server1url + 'getclient.php';
+ClientConfig.voteClientUrl = server2url + 'getclient.php';
 
 
 
@@ -83,7 +83,7 @@ ClientConfig.getServerInfoByName = function (servername) {
 };
 
 ClientConfig.BlindedVoter = {
-		'numCreateBallots': 5,	
+		'numCreateBallots': 1,	
 		'shuffleServerSeq': false,
 		'serverList':       ClientConfig.serverList
 		// TODO: add config which server has to verify and to sign how many ballots
