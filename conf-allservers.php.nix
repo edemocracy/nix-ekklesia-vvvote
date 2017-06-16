@@ -32,8 +32,8 @@ $tServerStoreVoteUrls = array('http://' . $urltmp['host'] . ':' . $tServerStoreV
 // number of ballots the servers have to sign 0: first signing server, 1: second signing server...
 // last server always must be set to 1.
 //     $numBallots = 2; 
-$numSignBallots   = array(0 => 3, 1 => 1);  
-$numVerifyBallots = array(0 => 2, 1 => 2);
+$numSignBallots   = array(0 => 1, 1 => 1);  
+$numVerifyBallots = array(0 => 0, 1 => 0);
 $numPSigsRequiered = count($numSignBallots); // this number of sigs from permission servers are requiered in order for a return envelope to be accepted
 $numPServers = $numPSigsRequiered; // number of permission servers
 $numTServers = 1;
