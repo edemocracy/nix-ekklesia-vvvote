@@ -10,6 +10,7 @@ self: {
   vote_port = 10001;
   webclient_port = 10003;
   webclient_url = "http://localhost:${toString self.webclient_port}";
+  use_anon_server = true;
 
   is_tally_server = self.tally_server_number == self.server_number;
 

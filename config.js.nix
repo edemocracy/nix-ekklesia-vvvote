@@ -46,7 +46,7 @@ ClientConfig.storeVoteUrl      = serverinfos.tServerStoreVoteUrls[0]; //do not u
 ClientConfig.getResultUrl      = server1url + 'getresult.php'; //?XDEBUG_SESSION_START=ECLIPSE_DBGP&KEY=13727034088813';
 
 
-ClientConfig.anonymizerUrl = 'http://anonymouse.org/cgi-bin/anon-www_de.cgi/'; // used to change the ip and to strip browser infos / with trailing slash
+ClientConfig.anonymizerUrl = '${if use_anon_server then "http://anonymouse.org/cgi-bin/anon-www_de.cgi/" else ""}'; // used to change the ip and to strip browser infos / with trailing slash
 ClientConfig.voteClientUrl = server2url + 'getclient.php';
 
 
