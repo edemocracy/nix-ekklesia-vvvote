@@ -1,4 +1,4 @@
-{ pkgs, lib, vars }:
+{ pkgs, lib, vars, vvvoteFrontend }:
 
 let 
 common = pkgs.callPackage ./common.nix { inherit pkgs; };
@@ -18,6 +18,10 @@ pkgs.stdenv.mkDerivation {
   inherit (common) src;
 
   patches = [ ./0001-always-use-internal-ssl.patch ];
+
+  postPatch = ''
+    substituteInPlace backend/getclient.php --replace ../webclient ${vvvoteFrontend}
+  '';
 
   dontBuild = true; # nothing to build for this PHP app ;)
   installPhase = ''

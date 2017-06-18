@@ -24,8 +24,8 @@ composeConfig =
 vars = if vars_override != null then vars_override
   else lib.fix' (extendsRec (scopedImport { inherit pkgs lib composeConfig; } customVarsPath) (import ./default_vars.nix) );
 
-vvvoteBackend = pkgs.callPackage ./vvvote_backend.nix { inherit vars; };
 vvvoteFrontend = pkgs.callPackage ./vvvote_frontend.nix { inherit vars; };
+vvvoteBackend = pkgs.callPackage ./vvvote_backend.nix { inherit vars vvvoteFrontend; };
 
 uwsgiConfig = pkgs.writeText "vvvote_backend-uwsgi.ini" ''
   [uwsgi]
