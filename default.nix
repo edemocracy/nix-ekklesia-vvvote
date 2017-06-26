@@ -5,24 +5,14 @@ let
 uwsgi = pkgs.callPackage ./uwsgi.nix {};
 php = uwsgi.php;
 lib = pkgs.lib;
-# variant of lib.extends which uses recursive set merging instead of //
-extendsRec = f: rattrs: self: let super = rattrs self; in lib.recursiveUpdate super (f self super);
-
-# Can be used to extend a custom configuration. 
-# The extension `g` can access settings from the customized configuration with `super` and default values with `default`.
-# Based on lib.composeExtensions using recursive set merging instead of //.
-composeConfig =
-  f: g: self: default:
-    let fApplied = f self default;
-        super = lib.recursiveUpdate default fApplied;
-    in lib.recursiveUpdate fApplied (g self super default);
+mylib = pkgs.callPackage ./mylib.nix {};
 
 # Recursively merge custom settings from customVarsPath into the default config.
 # Vars from the default config can be accessed with `super`.
 # Config settings can refer to other settings using `self`.
 # See `extends` in `nixpkgs/lib/trivial.nix` for details.
 vars = if vars_override != null then vars_override
-  else lib.fix' (extendsRec (scopedImport { inherit pkgs lib composeConfig; } customVarsPath) (import ./default_vars.nix) );
+  else lib.fix' (mylib.extendsRec (scopedImport { inherit pkgs lib; inherit (mylib) composeConfig; } customVarsPath) (import ./default_vars.nix));
 
 vvvoteFrontend = pkgs.callPackage ./vvvote_frontend.nix { inherit vars; };
 vvvoteBackend = pkgs.callPackage ./vvvote_backend.nix { inherit vars vvvoteFrontend; };
