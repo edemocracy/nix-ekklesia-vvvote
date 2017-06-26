@@ -27,21 +27,11 @@ vars = if vars_override != null then vars_override
 vvvoteFrontend = pkgs.callPackage ./vvvote_frontend.nix { inherit vars; };
 vvvoteBackend = pkgs.callPackage ./vvvote_backend.nix { inherit vars vvvoteFrontend; };
 
-uwsgiConfig = pkgs.writeText "vvvote_backend-uwsgi.ini" ''
-  [uwsgi]
-  plugins = 0:php
-  socket = ${vars.uwsgi.socket}
-  http = ${vars.uwsgi.http}
-  project_dir = ${vvvoteBackend}
-  php-docroot = %(project_dir)
-  php-allowed-ext = .php
-  php-allowed-ext = .inc
-'';
+uwsgiConfig = pkgs.writeText "vvvote_backend-uwsgi.ini" (scopedImport { inherit vars vvvoteBackend; } ./backend-uwsgi.ini.nix);
 
 startscript = pkgs.writeScriptBin "vvvote_backend-uwsgi.sh" ''
   ${uwsgi}/bin/uwsgi ${uwsgiConfig} "$@"
 '';
-
 
 adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
   cd ${vvvoteBackend}
@@ -50,28 +40,7 @@ adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
 
 keyscript = pkgs.writeScriptBin "vvvote-create-keypair.sh" (scopedImport { inherit vvvoteBackend; } ./create_keypair.php.nix);
 
-frontendScript = pkgs.writeScriptBin "vvvote_frontend-server.py" ''
-  #!/usr/bin/env python3
-  import http.server
-  import socketserver
-  import os
-
-  PORT = ${toString vars.webclient_port}
-  os.chdir("${vvvoteFrontend}")
-
-  class Handler(http.server.SimpleHTTPRequestHandler):
-      def end_headers(self):
-          self.send_custom_headers()
-          super().end_headers()
-
-      def send_custom_headers(self):
-          self.send_header("Access-Control-Allow-Origin", "*")
-
-
-  with socketserver.TCPServer(("", PORT), Handler) as httpd:
-      print("serving at port", PORT)
-      httpd.serve_forever()
-'';
+frontendScript = pkgs.writeScriptBin "vvvote_frontend-server.py" (scopedImport { inherit vvvoteFrontend vars; } ./frontend-server.py.nix);
 
 
 varsForDebugOutput = removeAttrs vars ["__unfix__"];
