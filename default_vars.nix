@@ -30,11 +30,12 @@ self: {
 
   oauth = {
     server_id = "ekklesia";
-    client_id = "vvvote";
-    client_secret = "vvvote";
+    server_description = "ID Server";
+    client_ids =  [ "vvvote" "vvvote2" ];
+    client_secrets = [ "vvvote" "vvvote2" ];
     endpoints = {
-      authorization = self.id_server_url + "/oauth/authorize/";
-      token = self.id_server_url + "/oauth/token/";
+      authorization = self.id_server_url + "/oauth2/authorize/";
+      token = self.id_server_url + "/oauth2/token/";
       is_in_voter_list = self.id_server_url + "/api/v1/user/listmember/";
       get_membership = self.id_server_url + "/api/v1/user/membership/";
       get_auid = self.id_server_url + "/api/v1/user/auid/";

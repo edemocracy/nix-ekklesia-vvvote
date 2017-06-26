@@ -57,22 +57,24 @@ redirectUriTMP[ClientConfig.serverList[0].name] = server1url + 'modules-auth/oau
 redirectUriTMP[ClientConfig.serverList[1].name] = server2url + 'modules-auth/oauth/callback.php'; //https://84.246.124.167/backend//modules-auth/oauth/callback.php
 
 var clientIdTMP = [];
-clientIdTMP[ClientConfig.serverList[0].name] = 'vvvote';
-clientIdTMP[ClientConfig.serverList[1].name] = 'vvvote2';
+${let s = oauth.client_ids; in 
+  lib.concatMapStringsSep "\n" 
+  (n: "clientIdTMP[ClientConfig.serverList[${toString n}].name] = '${builtins.elemAt s n}';") 
+  (lib.range 0 ((builtins.length s) - 1))}
 
 
-var oAuth2ConfigBEOBayern = {
-		serverId: 		'BEOBayern', // This is used in the backend to identify the oauth server
-		serverDesc: 	'Basisentscheid Online der Piraten (Bayerischer Testserver)',
-		authorizeUri: 	'https://beoauth.piratenpartei-bayern.de/oauth2/authorize/?', // must end with ?
-		loginUri:		'https://beoauth.piratenpartei-bayern.de/',
+var oAuth2Config = {
+		serverId: 		'${oauth.server_id}', // This is used in the backend to identify the oauth server
+		serverDesc: 	'${oauth.server_description}',
+		authorizeUri: 	'${oauth.endpoints.authorization}?', // must end with ?
+		loginUri:		'${id_server_url}/',
 		scope: 			'member unique mail',
 		redirectUri: 	redirectUriTMP,
 		clientId: 		clientIdTMP
 };
 
 ClientConfig.oAuth2Config = {
-		'BEOBayern': oAuth2ConfigBEOBayern
+		'${oauth.server_id}': oAuth2Config
 };
 
 ClientConfig.getServerInfoByName = function (servername) {

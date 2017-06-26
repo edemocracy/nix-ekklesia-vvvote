@@ -72,10 +72,10 @@ if (! isset($urltmp['port']) || ($urltmp['port'] == 0)) {
 
 // OAuth 2.0 config
 $configUrlBase = $pServerUrlBases[$serverNo -1];
-$oauthBEObayern = array(
+$oauthEkklesia = array(
     'serverId'      => '${oauth.server_id}',
-    'client_id'     => '${oauth.client_id}',
-    'client_secret' => '${oauth.client_secret}',
+    'client_id'     => '${builtins.elemAt oauth.client_ids (server_number - 1)}',
+    'client_secret' => '${builtins.elemAt oauth.client_secrets (server_number - 1)}',
     'redirect_uri'  => $configUrlBase . '/modules-auth/oauth/callback.php',
     'mail_identity' => 'voting', // this is used for the sendmail_endp and determines which sender will be used for the mail 
     'mail_sign_it'  => true,     // wheather the mail should be signed by the id server 
@@ -92,7 +92,7 @@ $oauthBEObayern = array(
     'sendmail_endp'			=> '${oauth.endpoints.sendmail}'
 );
 
-$oauthConfig = array($oauthBEObayern['serverId'] => $oauthBEObayern);
+$oauthConfig = array($oauthEkklesia['serverId'] => $oauthEkklesia);
 $pserverkey = loadprivatekey('PermissionServer', $serverNo, $pServerKeys);
 ${if is_tally_server then "$tserverkey = loadprivatekey('TallyServer', $serverNo, $tServerKeys);" else ""}
 ?>
