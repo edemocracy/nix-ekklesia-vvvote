@@ -48,6 +48,8 @@ adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
   ${php}/bin/php -f admin.php "$@"
 '';
 
+keyscript = pkgs.writeScriptBin "vvvote-create-keypair.sh" (scopedImport { inherit vvvoteBackend; } ./create_keypair.php.nix);
+
 frontendScript = pkgs.writeScriptBin "vvvote_frontend-server.py" ''
   #!/usr/bin/env python3
   import http.server
@@ -82,6 +84,7 @@ in pkgs.stdenv.mkDerivation {
     mkdir -p $out/bin
     ln -s ${startscript}/bin/vvvote_backend-uwsgi.sh $out/bin/
     ln -s ${adminscript}/bin/vvvote-admin.sh $out/bin/
+    ln -s ${keyscript}/bin/vvvote-create-keypair.sh $out/bin/
     ln -s ${frontendScript}/bin/vvvote_frontend-server.py $out/bin/
 
     # not needed in production, but helpful for debugging
@@ -92,6 +95,6 @@ in pkgs.stdenv.mkDerivation {
   '';
 
   shellHook = ''
-    export PATH=$PATH:${php}/bin:${adminscript}/bin
+    export PATH=$PATH:${php}/bin:${adminscript}/bin:${keyscript}/bin
   '';
 }
