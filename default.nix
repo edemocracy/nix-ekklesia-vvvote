@@ -2,17 +2,20 @@
   customVarsPath ? ./custom_vars.nix, vars_override ? null }:
 
 let
-uwsgi = pkgs.callPackage ./uwsgi.nix {};
-php = uwsgi.php;
 lib = pkgs.lib;
 mylib = pkgs.callPackage ./mylib.nix {};
+php = uwsgi.php;
+uwsgi = pkgs.callPackage ./uwsgi.nix {};
 
 # Recursively merge custom settings from customVarsPath into the default config.
 # Vars from the default config can be accessed with `super`.
 # Config settings can refer to other settings using `self`.
 # See `extends` in `nixpkgs/lib/trivial.nix` for details.
 vars = if vars_override != null then vars_override
-  else lib.fix' (mylib.extendsRec (scopedImport { inherit pkgs lib; inherit (mylib) composeConfig; } customVarsPath) (import ./default_vars.nix));
+  else lib.fix' 
+    (mylib.extendsRec 
+      (scopedImport { inherit pkgs lib; inherit (mylib) composeConfig; } customVarsPath) 
+      (import ./default_vars.nix));
 
 vvvoteFrontend = pkgs.callPackage ./vvvote_frontend.nix { inherit vars; };
 vvvoteBackend = pkgs.callPackage ./vvvote_backend.nix { inherit vars vvvoteFrontend; };
@@ -29,9 +32,7 @@ adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
 '';
 
 keyscript = pkgs.writeScriptBin "vvvote-create-keypair.sh" (scopedImport { inherit vvvoteBackend; } ./create_keypair.php.nix);
-
 frontendScript = pkgs.writeScriptBin "vvvote_frontend-server.py" (scopedImport { inherit vvvoteFrontend vars; } ./frontend-server.py.nix);
-
 
 varsForDebugOutput = removeAttrs vars ["__unfix__"];
 

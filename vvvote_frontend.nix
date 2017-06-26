@@ -22,7 +22,6 @@ pkgs.stdenv.mkDerivation {
     config_dir=$out/config
     cp -r webclient $out
     chmod u+w -R $out
-    # linking doesn't work because PHP uses the location of the real file for __DIR__
     ln -s ${configFile} $config_dir/config.js
     rm -f $config_dir/config-example.js
   '';
