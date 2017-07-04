@@ -25,7 +25,6 @@ pkgs.stdenv.mkDerivation {
 
   dontBuild = true; # nothing to build for this PHP app ;)
   installPhase = ''
-    set -x
     config_dir=$out/config
     cp -r backend $out
     chmod u+w -R $out
@@ -40,7 +39,6 @@ pkgs.stdenv.mkDerivation {
     # link private keys
     ln -s ${keydir}/PermissionServer${toString vars.server_number}.privatekey.pem.php $config_dir
     ln -s ${keydir}/TallyServer${toString vars.tally_server_number}.publickey $config_dir
-    set +x
   '' 
   + lib.optionalString (vars.keydir != null && vars.is_tally_server) ''
     ln -s ${keydir}/TallyServer${toString vars.server_number}.privatekey.pem.php $config_dir

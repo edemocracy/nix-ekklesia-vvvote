@@ -18,7 +18,6 @@ pkgs.stdenv.mkDerivation {
   '';
 
   installPhase = ''
-    set -x
     config_dir=$out/config
     cp -r webclient $out
     chmod u+w -R $out
