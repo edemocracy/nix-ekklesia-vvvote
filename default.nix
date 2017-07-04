@@ -31,7 +31,7 @@ adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
 '';
 
 keyscript = pkgs.writeScriptBin "vvvote-create-keypair.sh" (scopedImport { inherit vvvote; } ./create_keypair.php.nix);
-frontendScript = pkgs.writeScriptBin "vvvote_frontend-server.py" (scopedImport { inherit vars vvvote; } ./frontend-server.py.nix);
+webclientScript = pkgs.writeScriptBin "serve-webclient.py" (scopedImport { inherit vars vvvote; } ./serve-webclient.py.nix);
 
 varsForDebugOutput = removeAttrs vars ["__unfix__"];
 
@@ -44,7 +44,7 @@ in pkgs.stdenv.mkDerivation {
     ln -s ${startscript}/bin/vvvote_backend-uwsgi.sh $out/bin/
     ln -s ${adminscript}/bin/vvvote-admin.sh $out/bin/
     ln -s ${keyscript}/bin/vvvote-create-keypair.sh $out/bin/
-    ln -s ${frontendScript}/bin/vvvote_frontend-server.py $out/bin/
+    ln -s ${webclientScript}/bin/serve-webclient.py $out/bin/
 
     # not needed in production, but helpful for debugging
     ln -s ${uwsgiConfig} $out/vvvote_backend-uwsgi.ini
