@@ -1,4 +1,4 @@
-{ pkgs, lib, vars }:
+{ pkgs, lib, vars, php }:
 
 let 
 common = pkgs.callPackage ./common.nix { inherit pkgs; };
@@ -20,6 +20,8 @@ pkgs.stdenv.mkDerivation {
   inherit (common) src;
 
   patches = [ ./0001-always-use-internal-ssl.patch ];
+
+  buildInputs = [ php ];
 
   postPatch = ''
     substituteInPlace webclient/index.html --replace ../backend/ ${builtins.head vars.backend_urls}
@@ -50,5 +52,15 @@ pkgs.stdenv.mkDerivation {
   '' 
   + lib.optionalString (vars.keydir != null && vars.is_tally_server) ''
     ln -s ${keydir}/TallyServer${toString vars.server_number}.privatekey.pem.php $backend_config_dir
+  ''
+  # optimization: compile webclient
+  # running the getclient.php script requires the keys, so we can only do that when a keydir is given
+  # maybe that could be fixed in vvvote?
+  + lib.optionalString (vars.keydir != null) ''
+    build_dir=$PWD
+    cd $out/backend
+    php getclient.php > $build_dir/index.html
+    cd $build_dir
+    mv index.html $out/webclient
   '';
 }

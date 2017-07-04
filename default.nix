@@ -17,7 +17,7 @@ vars = if vars_override != null then vars_override
       (scopedImport { inherit pkgs lib; inherit (mylib) composeConfig; } customVarsPath) 
       (import ./default_vars.nix));
 
-vvvote = pkgs.callPackage ./vvvote.nix { inherit vars; };
+vvvote = pkgs.callPackage ./vvvote.nix { inherit vars php; };
 
 uwsgiConfig = pkgs.writeText "vvvote_backend-uwsgi.ini" (scopedImport { inherit vars vvvote; } ./backend-uwsgi.ini.nix);
 
