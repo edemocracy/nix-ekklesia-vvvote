@@ -17,22 +17,21 @@ vars = if vars_override != null then vars_override
       (scopedImport { inherit pkgs lib; inherit (mylib) composeConfig; } customVarsPath) 
       (import ./default_vars.nix));
 
-vvvoteFrontend = pkgs.callPackage ./vvvote_frontend.nix { inherit vars; };
-vvvoteBackend = pkgs.callPackage ./vvvote_backend.nix { inherit vars vvvoteFrontend; };
+vvvote = pkgs.callPackage ./vvvote.nix { inherit vars; };
 
-uwsgiConfig = pkgs.writeText "vvvote_backend-uwsgi.ini" (scopedImport { inherit vars vvvoteBackend; } ./backend-uwsgi.ini.nix);
+uwsgiConfig = pkgs.writeText "vvvote_backend-uwsgi.ini" (scopedImport { inherit vars vvvote; } ./backend-uwsgi.ini.nix);
 
 startscript = pkgs.writeScriptBin "vvvote_backend-uwsgi.sh" ''
   ${uwsgi}/bin/uwsgi ${uwsgiConfig} "$@"
 '';
 
 adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
-  cd ${vvvoteBackend}
+  cd ${vvvote}/backend
   ${php}/bin/php -f admin.php "$@"
 '';
 
-keyscript = pkgs.writeScriptBin "vvvote-create-keypair.sh" (scopedImport { inherit vvvoteBackend; } ./create_keypair.php.nix);
-frontendScript = pkgs.writeScriptBin "vvvote_frontend-server.py" (scopedImport { inherit vvvoteFrontend vars; } ./frontend-server.py.nix);
+keyscript = pkgs.writeScriptBin "vvvote-create-keypair.sh" (scopedImport { inherit vvvote; } ./create_keypair.php.nix);
+frontendScript = pkgs.writeScriptBin "vvvote_frontend-server.py" (scopedImport { inherit vars vvvote; } ./frontend-server.py.nix);
 
 varsForDebugOutput = removeAttrs vars ["__unfix__"];
 
@@ -49,8 +48,7 @@ in pkgs.stdenv.mkDerivation {
 
     # not needed in production, but helpful for debugging
     ln -s ${uwsgiConfig} $out/vvvote_backend-uwsgi.ini
-    ln -s ${vvvoteBackend} $out/vvvote_backend
-    ln -s ${vvvoteFrontend} $out/vvvote_frontend
+    ln -s ${vvvote} $out/vvvote
     ln -s ${pkgs.writeText "config.json" (builtins.toJSON varsForDebugOutput)} $out/config.json
   '';
 

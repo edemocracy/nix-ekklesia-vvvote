@@ -1,9 +1,9 @@
 ''#!/usr/bin/env php
 <?php
 
-require_once '${vvvoteBackend}/Math/BigInteger.php';
-require_once '${vvvoteBackend}/Crypt/RSA.php';
-require_once '${vvvoteBackend}/tools.php';
+require_once '${vvvote}/backend/Math/BigInteger.php';
+require_once '${vvvote}/backend/Crypt/RSA.php';
+require_once '${vvvote}/backend/tools.php';
 
 define('CRYPT_RSA_MODE', CRYPT_RSA_MODE_INTERNAL); // this is needed because otherwise openssl (if present) needs special configuration in openssl.cnf when creating a new key pair
 

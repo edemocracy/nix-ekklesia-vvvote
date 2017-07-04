@@ -5,7 +5,7 @@ import socketserver
 import os
 
 PORT = ${toString vars.webclient_port}
-os.chdir("${vvvoteFrontend}")
+os.chdir("${vvvote}/webclient")
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
