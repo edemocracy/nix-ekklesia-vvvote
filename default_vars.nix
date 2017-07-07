@@ -1,6 +1,9 @@
 self: {
   debug = true;
   keydir = null;
+  # By default, keys are linked from keydir to the Nix store. Activate the following setting to copy them instead.
+  # !!!WARNING: private keys will be world-readable in the Nix store when this is set to true!!!
+  copy_keys_to_store = false;
   server_number = 1; # position of this server, starts with 1
   # urls for the backend servers. The first server is pos 1, the second pos 2 and so on.
   backend_urls = [ "http://localhost:10001/" "http://localhost:10002/" ];

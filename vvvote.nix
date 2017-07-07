@@ -13,6 +13,8 @@ keydir = toString vars.keydir;
 publicKeyFiles = if (vars.keydir == null) then [] else
   map (i: "${keydir}/PermissionServer${toString i}.publickey") (lib.range 1 (builtins.length vars.backend_urls));
 
+lnOrCp = if vars.copy_keys_to_store then "cp" else "ln -s";
+
 in 
 pkgs.stdenv.mkDerivation {
   name = "vvvote";
@@ -39,18 +41,18 @@ pkgs.stdenv.mkDerivation {
     
     # webclient
     webclient_config_dir=$out/webclient/config
-    ln -s ${webclientConfigFile} $webclient_config_dir/config.js
+    cp ${webclientConfigFile} $webclient_config_dir/config.js
     rm -f $webclient_config_dir/config-example.js
   '' 
   + lib.optionalString (vars.keydir != null) ''
     # link public permission server keys (optional: pass them as argument?)
-    ${lib.concatMapStringsSep "\n" (k: "ln -s ${k} $backend_config_dir") publicKeyFiles}
+    ${lib.concatMapStringsSep "\n" (k: "${lnOrCp} ${k} $backend_config_dir") publicKeyFiles}
     # link private keys
-    ln -s ${keydir}/PermissionServer${toString vars.server_number}.privatekey.pem.php $backend_config_dir
-    ln -s ${keydir}/TallyServer${toString vars.tally_server_number}.publickey $backend_config_dir
+    ${lnOrCp} ${keydir}/PermissionServer${toString vars.server_number}.privatekey.pem.php $backend_config_dir
+    ${lnOrCp} ${keydir}/TallyServer${toString vars.tally_server_number}.publickey $backend_config_dir
   '' 
   + lib.optionalString (vars.keydir != null && vars.is_tally_server) ''
-    ln -s ${keydir}/TallyServer${toString vars.server_number}.privatekey.pem.php $backend_config_dir
+    ${lnOrCp} ${keydir}/TallyServer${toString vars.server_number}.privatekey.pem.php $backend_config_dir
   ''
   # optimization: compile webclient
   # running the getclient.php script requires the keys, so we can only do that when a keydir is given
