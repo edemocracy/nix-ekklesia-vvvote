@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+LOGDIR=./logs
+mkdir -p $LOGDIR
+nix-build --arg customVarsPath ./custom_vars_server_1.nix -o server1
+nix-build --arg customVarsPath ./custom_vars_server_2.nix -o server2
+trap 'kill $(jobs -p)' EXIT
+server1/bin/vvvote_backend-uwsgi.sh --logto $LOGDIR/vvvote_server_1.log &
+server2/bin/vvvote_backend-uwsgi.sh --logto $LOGDIR/vvvote_server_2.log &
+server1/bin/serve-webclient.py & 
+wait

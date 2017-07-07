@@ -1,7 +1,6 @@
 { pkgs, lib, vars, php }:
 
 let 
-common = pkgs.callPackage ./common.nix { inherit pkgs; };
 thisConfig = scopedImport { inherit vars lib; } ./conf-thisserver.php.nix;
 allConfig = scopedImport { inherit vars lib; } ./conf-allservers.php.nix;
 webclientConfig = scopedImport { inherit vars lib; } ./config.js.nix;
@@ -17,7 +16,7 @@ publicKeyFiles = if (vars.keydir == null) then [] else
 in 
 pkgs.stdenv.mkDerivation {
   name = "vvvote";
-  inherit (common) src;
+  src = scopedImport { inherit pkgs; } ./src.nix;
 
   patches = [ ./0001-always-use-internal-ssl.patch ];
 

@@ -1,0 +1,3 @@
+self: default: {
+  keydir = ./quickstart;
+}

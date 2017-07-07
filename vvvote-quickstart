@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+DIR=quickstart
+mkdir -p $DIR
+nix-shell --run "vvvote-create-keypair.sh $DIR p 1 && vvvote-create-keypair.sh $DIR p 2 && vvvote-create-keypair.sh $DIR t 1"
+nix-build --arg customVarsPath ./quickstart_vars_server_1.nix -o $DIR/server1
+nix-build --arg customVarsPath ./quickstart_vars_server_2.nix -o $DIR/server2
+cd $DIR
+
+trap 'kill $(jobs -p)' EXIT
+server1/bin/vvvote_backend-uwsgi.sh --logto vvvote_server_1.log &
+server2/bin/vvvote_backend-uwsgi.sh --logto vvvote_server_2.log &
+server1/bin/serve-webclient.py &
+wait
