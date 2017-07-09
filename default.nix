@@ -1,5 +1,5 @@
 { pkgs ? import ./nixpkgs.nix, 
-  customVarsPath ? ./custom_vars.nix, vars_override ? null }:
+  customVarsPath ? ./custom_vars.nix, varsOverride ? {} }:
 
 let
 lib = pkgs.lib;
@@ -11,11 +11,11 @@ uwsgi = pkgs.callPackage ./uwsgi.nix {};
 # Vars from the default config can be accessed with `super`.
 # Config settings can refer to other settings using `self`.
 # See `extends` in `nixpkgs/lib/trivial.nix` for details.
-vars = if vars_override != null then vars_override
-  else lib.fix' 
+vars = 
+  (lib.fix' 
     (mylib.extendsRec 
       (scopedImport { inherit pkgs lib; inherit (mylib) composeConfig; } customVarsPath) 
-      (import ./default_vars.nix));
+      (import ./default_vars.nix))) // varsOverride;
 
 vvvote = pkgs.callPackage ./vvvote.nix { inherit vars php; };
 
