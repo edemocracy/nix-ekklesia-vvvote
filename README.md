@@ -42,4 +42,8 @@ To configure two instances, copy `example_custom_vars_local_server_1.nix` and `e
 
 See the `vvvote-local` script as an example how to build and run the two VVVote backend instances. The first one is also used to serve the webclient to users.
 
+## Building VVVote Docker Images
 
+The Nix expression in `docker.nix` builds image tars that can be used with Docker.  (Private) keys must be copied to the Nix store and then to the image, so the setting `copy_keys_to_store` must be set to `true` and `keydir` must be a path, absolute or relative (without double quotes). `uwsgi.http_address` should be set to `""` (empty string) so HTTP can be reached from outside the container.
+
+Have a look at `vvvote-build-docker-images` to see how to build and import images into Docker.
