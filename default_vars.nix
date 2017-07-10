@@ -27,8 +27,10 @@ self: {
   };
 
   uwsgi = {
-    socket = ":20001";
-    http = ":10001";
+    socket_port = 20001;
+    socket_address = "127.0.0.1";
+    http_port = 10001;
+    http_address = "127.0.0.1";
   };
 
   oauth = {

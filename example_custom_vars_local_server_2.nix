@@ -6,8 +6,8 @@ server2Override = self: super: default: {
   server_number = 2;
   db.name = "vvvote2";
   uwsgi = {
-    socket = ":20002";
-    http = ":10002";
+    socket_port = 20002;
+    http_port = 10002;
   };
 };
 # merge overrides for server 2 into the server 1 config
