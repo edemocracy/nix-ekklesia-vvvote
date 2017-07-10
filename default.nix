@@ -55,4 +55,6 @@ in pkgs.stdenv.mkDerivation {
   shellHook = ''
     export PATH=$PATH:${php}/bin:${adminscript}/bin:${keyscript}/bin
   '';
+
+  passthru = { inherit vars; };
 }
