@@ -8,12 +8,12 @@ webclientConfig = scopedImport { inherit vars lib; } ./config.js.nix;
 thisConfigFile = pkgs.writeText "conf-thisserver.php" thisConfig;
 allConfigFile = pkgs.writeText "conf-allservers.php" allConfig;
 webclientConfigFile = pkgs.writeText "config.js" webclientConfig;
-keydir = toString vars.keydir;
+keydir = if (!(builtins.isString vars.keydir) && vars.copy_keys_to_store == false) then
+  throw ''keydir cannot be a path (without quotes) when copy_keys_to_store is not enabled! Paths are copied to the Nix store which may be a security risk! Use a string with double quotes as keydir and copy_keys_to_store = false to link keys to the Nix store. This only works when Nix sandboxing is not enabled. If you want to copy the keys to the Nix store, set copy_keys_to_store = true.'' else vars.keydir;
+
 
 publicKeyFiles = if (vars.keydir == null) then [] else
   map (i: "${keydir}/PermissionServer${toString i}.publickey") (lib.range 1 (builtins.length vars.backend_urls));
-
-lnOrCp = if vars.copy_keys_to_store then "cp" else "ln -s";
 
 in 
 pkgs.stdenv.mkDerivation {
@@ -46,13 +46,13 @@ pkgs.stdenv.mkDerivation {
   '' 
   + lib.optionalString (vars.keydir != null) ''
     # link public permission server keys (optional: pass them as argument?)
-    ${lib.concatMapStringsSep "\n" (k: "${lnOrCp} ${k} $backend_config_dir") publicKeyFiles}
+    ${lib.concatMapStringsSep "\n" (k: "ln -s ${k} $backend_config_dir") publicKeyFiles}
     # link private keys
-    ${lnOrCp} ${keydir}/PermissionServer${toString vars.server_number}.privatekey.pem.php $backend_config_dir
-    ${lnOrCp} ${keydir}/TallyServer${toString vars.tally_server_number}.publickey $backend_config_dir
+    ln -s ${keydir}/PermissionServer${toString vars.server_number}.privatekey.pem.php $backend_config_dir
+    ln -s ${keydir}/TallyServer${toString vars.tally_server_number}.publickey $backend_config_dir
   '' 
   + lib.optionalString (vars.keydir != null && vars.is_tally_server) ''
-    ${lnOrCp} ${keydir}/TallyServer${toString vars.server_number}.privatekey.pem.php $backend_config_dir
+    ln -s ${keydir}/TallyServer${toString vars.server_number}.privatekey.pem.php $backend_config_dir
   ''
   # optimization: compile webclient
   # running the getclient.php script requires the keys, so we can only do that when a keydir is given
