@@ -1,12 +1,12 @@
-let 
+let
 server1Conf = import ./custom_vars_local_server_1.nix;
 server2Override = self: super: default: {
-  server_number = 2;
-  is_tally_server = false;
+  serverNumber = 2;
+  isTallyServer = false;
   db.name = "vvvote2";
   uwsgi = {
-    socket_port = 20002;
-    http_port = 10002;
+    socketPort = 20002;
+    httpPort = 10002;
   };
 };
 in composeConfig server1Conf server2Override

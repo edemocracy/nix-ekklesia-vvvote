@@ -4,7 +4,7 @@ import http.server
 import socketserver
 import os
 
-PORT = ${toString vars.webclient_port}
+PORT = ${toString vars.webclientPort}
 os.chdir("${vvvote}/webclient")
 
 class Handler(http.server.SimpleHTTPRequestHandler):

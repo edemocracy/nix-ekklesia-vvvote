@@ -1,20 +1,19 @@
-{ pkgs ? import ./nixpkgs.nix, 
+{ sources ? null,
   customVarsPath ? ./custom_vars.nix, varsOverride ? {} }:
 
 let
 lib = pkgs.lib;
-mylib = pkgs.callPackage ./mylib.nix {};
-php = uwsgi.php;
-uwsgi = pkgs.callPackage ./uwsgi.nix {};
+deps = import ./nix/deps.nix { inherit sources; };
+inherit (deps) mylib php uwsgi pkgs;
 
 # Recursively merge custom settings from customVarsPath into the default config.
 # Vars from the default config can be accessed with `super`.
 # Config settings can refer to other settings using `self`.
 # See `extends` in `nixpkgs/lib/trivial.nix` for details.
-vars = 
-  (lib.fix' 
-    (mylib.extendsRec 
-      (scopedImport { inherit pkgs lib; inherit (mylib) composeConfig; } customVarsPath) 
+vars =
+  (lib.fix'
+    (mylib.extendsRec
+      (scopedImport { inherit pkgs lib; inherit (mylib) composeConfig; } customVarsPath)
       (import ./default_vars.nix))) // varsOverride;
 
 vvvote = pkgs.callPackage ./vvvote.nix { inherit vars php; };
@@ -30,7 +29,6 @@ adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
   ${php}/bin/php -f admin.php "$@"
 '';
 
-keyscript = pkgs.writeScriptBin "vvvote-create-keypair.sh" (scopedImport { inherit vvvote; } ./create_keypair.php.nix);
 webclientScript = pkgs.writeScriptBin "serve-webclient.py" (scopedImport { inherit vars vvvote; } ./serve-webclient.py.nix);
 
 varsForDebugOutput = removeAttrs vars ["__unfix__"];
@@ -43,7 +41,6 @@ in pkgs.stdenv.mkDerivation {
     mkdir -p $out/bin
     ln -s ${startscript}/bin/vvvote_backend-uwsgi.sh $out/bin/
     ln -s ${adminscript}/bin/vvvote-admin.sh $out/bin/
-    ln -s ${keyscript}/bin/vvvote-create-keypair.sh $out/bin/
     ln -s ${webclientScript}/bin/serve-webclient.py $out/bin/
 
     # not needed in production, but helpful for debugging
@@ -53,7 +50,7 @@ in pkgs.stdenv.mkDerivation {
   '';
 
   shellHook = ''
-    export PATH=$PATH:${php}/bin:${adminscript}/bin:${keyscript}/bin
+    export PATH=$PATH:${php}/bin:${adminscript}/bin
   '';
 
   passthru = { inherit vars; };
