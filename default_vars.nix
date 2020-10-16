@@ -6,17 +6,28 @@ self: {
   copyKeysToStore = false;
   serverNumber = 1; # position of this server, starts with 1
   # urls for the backend servers. The first server is pos 1, the second pos 2 and so on.
-  backendUrls = [ "http://localhost:10001/" "http://localhost:10002/" ];
+  backendUrls = [ "http://localhost/backend1" "http://localhost/backend2" ];
   idServerUrl = "https://id.localhost";
   hostingOrganisationUrl = "";
+  mailContentSubject = "Wahlschein erstellt";
+  mailContentBody = ''
+    Hallo!
 
-  tallyServerNumber = 1; # which server acts as tally server? (starts at 1!)
-  votePort = 10001;
-  webclientPort = 10003;
-  webclientUrl = "http://localhost:${toString self.webclientPort}";
+    Sie haben für die Abstimmung >$electionId< einen Wahlschein erstellt.
+    Falls dies nicht zutreffen sollte, wenden Sie sich bitte umgehend an einen Abstimmungsverantwortlichen.
+
+    Freundliche Grüße
+
+    Das Wahlteam
+  '';
+
+  tallyServerNumbers = [ 1 2 ]; # which server acts as tally server? (starts at 1!)
+  votePort = 80;
+  webclientUrl = "http://localhost/vvvote";
   useAnonServer = true;
 
-  isTallyServer = self.tallyServerNumber == self.serverNumber;
+
+  isTallyServer = builtins.any (n: self.serverNumber == n) self.tallyServerNumbers;
 
   db = {
     name = "vvvote";
@@ -27,19 +38,22 @@ self: {
     prefix = "";
   };
 
-  uwsgi = {
-    socketPort = 20001;
-    socketAddress = "127.0.0.1";
+  backend = {
     httpPort = 10001;
     httpAddress = "127.0.0.1";
   };
 
   oauth = {
     serverId = "ekklesia";
-    serverDescription = "ID Server";
+    serverDesc = "ID Server";
     clientIds =  [ "vvvote" "vvvote2" ];
     clientSecrets = [ "vvvote" "vvvote2" ];
-    oauthUrl = self.idServerUrl + "/";
-    resourcesUrl = self.idServerUrl + "/";
+    oauthUrl = self.idServerUrl;
+    resourcesUrl = self.idServerUrl;
+    serverUsageNote = {
+      de = "";
+      fr = "";
+      en_US = "";
+    };
   };
 }

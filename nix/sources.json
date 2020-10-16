@@ -12,15 +12,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nixpkgs": {
-        "branch": "nixos-unstable",
+        "branch": "fix-uwsgi-php-try3",
         "description": "Nix Packages collection",
         "homepage": null,
-        "owner": "NixOS",
+        "owner": "gdamjan",
         "repo": "nixpkgs",
-        "rev": "84d74ae9c9cbed73274b8e4e00be14688ffc93fe",
-        "sha256": "0ww70kl08rpcsxb9xdx8m48vz41dpss4hh3vvsmswll35l158x0v",
+        "rev": "b55cc92f5cc81d47e68330b85d71ce7422b175a6",
+        "sha256": "1m4y3243597wq067sfg9gvm8r04fishrfgy2r8k7d5dzk53cx803",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/84d74ae9c9cbed73274b8e4e00be14688ffc93fe.tar.gz",
+        "url": "https://github.com/gdamjan/nixpkgs/archive/b55cc92f5cc81d47e68330b85d71ce7422b175a6.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

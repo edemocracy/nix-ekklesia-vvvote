@@ -1,6 +1,9 @@
 with vars;
 with builtins;
-''
+let
+	toPhpString = s: "'${toString s}'";
+	toPhpStringArray = ll: "array(${lib.concatMapStringsSep ", " toPhpString ll})";
+in ''
 <?php
 $config = array (
 
@@ -9,7 +12,7 @@ $config = array (
 		// no trailing slash
 		// At least 2 servers are needed.
 		// This value must be the same on all Vvvote (permission) servers.
-		'pServerUrlBases' => array(${lib.concatMapStringsSep ", " (url: "'${url}'") backendUrls}),
+		'pServerUrlBases' => ${toPhpStringArray backendUrls},
 
 		// TCP-Port of the Vvvote (tally) servers (currently only the first one is used)
 		// Do not use SSL/TLS here. Why? The Vvvote-client uses an anonymizing service for
@@ -19,7 +22,7 @@ $config = array (
 		// uncomment, if you need to change it..
 		// This value must be the same on all Vvvote (permission) servers.
 		// defaults to 'tServerStoreVotePorts' => array ('80', '80'),
-		'tServerStoreVotePorts' => array (${toString votePort}, '80'),
+		'tServerStoreVotePorts' => array (${toPhpString votePort}, '80'),
 
 
 		// URL to your organisations's website
@@ -64,20 +67,20 @@ $config = array (
 						// This is arbitrary, must be unique and is set in the new election request in order to
 						// request this auth config
 						// It must match the according value in the portal configuration
-						'serverId' => 'KeyCloakTest',
+						'serverId' => '${oauth.serverId}',
 
 						// Short server description: Shown in webclient
-						'serverDesc' 	=>	'SSO der Partei Deutschland (Testserver)',
+						'serverDesc' 	=>	'${oauth.serverDesc}',
 
 						// OAuth2 client-ID needed for authentication at the OAuth2 server
 						// The client Ids of all vvvote servers are needed here, because the webclient need to
 						// know them all. This server picks his own based on $serverNo
 						// Vvvote uses "authorization code" flow. Maybe you have to set this option in
 						// the oAuth2 server config resp. in the vvvote account there.
-						'client_ids' => array('vvvote_neu_local_446', 'vvvote_neu_local_447'),
+						'client_ids' => ${toPhpStringArray oauth.clientIds},
 
 						// OAuth2 client secret needed for authentication at the OAuth2 server
-						'client_secret' => '[secret of this client]',
+						'client_secret' => '${elemAt oauth.clientSecrets (serverNumber - 1)}',
 
 						// Hint for the configuration of the oAuh2 server:
 						// Most oAuth2 servers require that you provide a callback-URL in order to make the authorization work.
@@ -115,11 +118,11 @@ $config = array (
 
 						// ekklesia: The oaut2 URL before the /oaut2/ part, e.g. https://beoauth.piratenpartei-bayern.de/
 						// keycloak: get this info from the admin interface of the keycloak server: client --> installation
-						'oauth_url' =>      'https://keycloak.test.ekklesiademocracy.org/auth/realms/test/protocol/openid-connect/',
+						'oauth_url' => '${oauth.oauthUrl}',
 
 						// id-server: The ressources URL including the version part, e.g. https://beoauth.piratenpartei-bayern.de/api/v1/
 						// keycloak: get this info from: /auth/realms/{realm}/.well-known/openid-configuration, eg. https://keycloak.test.ekklesiademocracy.org/auth/realms/test/.well-known/openid-configuration
-						'ressources_url' => 'https://keycloak.test.ekklesiademocracy.org/auth/realms/test/protocol/openid-connect/',
+						'ressources_url' => '${oauth.resourcesUrl}',
 
 						// Data usage note shown in the client before redirecting to the keycloak server
 						// Array of language codes as defined in webclient-sources/i18n/vvvote_*.js: there the 'lang' field,
@@ -128,122 +131,27 @@ $config = array (
 						// first element of the array will be displayed.
 						// The Text may not exceed 1 line, the layout may be corrupted otherwiese.
 						'serverUsageNote' => array(
-								'en_US' => 'To verify your entitlement to vote, the servers of the federal party are used.',
-								'de'    => 'Zur Prüfung Ihrer Stimmberechtigung werden die Systeme der Bundespartei verwendet.',
-								'fr'    => 'Les systèmes du parti fédéral sont utilisés pour vérifier votre droit de vote.'
+								'en_US' => '${oauth.serverUsageNote.en_US}',
+								'de'    => '${oauth.serverUsageNote.de}',
+								'fr'    => '${oauth.serverUsageNote.fr}'
 						),
 
 						// Authorization data for the notify server (using http basic authentication)
 						// this only applies to keycloak / special notify server
-						'notify_client_id' => 'example_app',
-						'notify_client_secret' => '[secret for example_app]',
-						'notify_url' => 'https://notify.test.ekklesiademocracy.org/freeform_message',
+						'notify_client_id' => '${oauth.notifyClientId}',
+						'notify_client_secret' => '${oauth.notifyClientSecret}',
+						'notify_url' => '${oauth.notifyUrl}',
 
 						// wheather the mail should be signed by the oAuh2 ressource server
 						'mail_sign_it' => true,
 
 						// Subject and content of the mail to be send to the user who generated a voting certificate.
 						// $electionId will be replaced by the electionId in subject and body
-						'mail_content_subject' => 'Wahlschein erstellt',
-						'mail_content_body' => 'Hallo!
-
-Sie haben für die Abstimmung >$electionId< einen Wahlschein erstellt.
-Falls dies nicht zutreffen sollte, wenden Sie sich bitte umgehend an einen Abstimmungsverantwortlichen.
-
-Freundliche Grüße
-
-Das Wahlteam'
+						'mail_content_subject' => '${mailContentSubject}',
+						'mail_content_body' => '${mailContentBody}'
 				),
-						array (
+		), // end oauth config
 
-						// This is arbitrary, must be unique and is set in the new election request in order to
-						// request this auth config
-						// It must match the according value in the portal configuration
-						'serverId' => 'TelevotiaTest',
-
-						// Short server description: Shown in webclient
-						'serverDesc' 	=>	'Online-Abstimmungen der Schweizer Partei (Testserver)',
-
-						// OAuth2 client-ID needed for authentication at the OAuth2 server
-						// The client Ids of all vvvote servers are needed here, because the webclient need to
-						// know them all. This server picks his own based on $serverNo
-						// Vvvote uses "authorization_bearer" as method. Maybe you have to set this option in
-						// the oAuth2 server config resp. vvvote account there.
-						'client_ids' => array(${lib.concatStringsSep "," oauth.clientIds}),
-
-						// OAuth2 client secret needed for authentication at the OAuth2 server
-						'client_secret' => '${elemAt oauth.clientSecrets (serverNumber - 1)}",
-
-						// Hint for the configuration of the oAuh2 server:
-						// Most oAuth2 servers require that you provide a callback-URL in order to make the authorization work.
-						// This URL will be: [pServerUrlBase of this server] + '/modules-auth/oauth/callback.php'
-
-						// type of oAuh2 server, currently only "ekklesia" is supported
-						'type' => 'ekklesia',
-
-						// You must use SSL/TLS here as the oAuth2 security relies on it.
-						// In order to do so:
-						// Copy the certificate (.pem)-file in backend/config and name it <serverId>.pem (you can easily use a webbrowser to obtain that file).
-						// Make sure the .pem file contains the complete certificate chain to the root certifitace. You can easily concat them.
-						// On linux, you can use the following command (replacing [hostname.domain] acordingly twice(!) and [serverId]:
-						// echo "" | openssl s_client -connect [hostname.domain]:443 -servername [hostname.domain] -prexit 2>/dev/null | sed -n -e '/BEGIN\ CERTIFICATE/,/END\ CERTIFICATE/ p' >[serverId.pem]
-
-						// The oaut2 URL before the /oaut2/ part, e.g. https://beoauth.piratenpartei-bayern.de/
-						'oauth_url' => '${oauth.oauthUrl}',
-
-						// The ressources URL including the version part, e.g. https://beoauth.piratenpartei-bayern.de/api/v1/
-						'ressources_url' => '${oauth.resourcesUrl}',
-
-						// this is used by the oAuth ressource for the sendmail_endp and determines which sender
-						// will be used for the mail
-						'mail_identity' => 'voting',
-
-						// wheather the mail should be signed by the oAuh2 ressource server
-						'mail_sign_it' => true,
-
-						// Subject and content of the mail to be send to the user who generated a voting certificate.
-						// $electionId will be replaced by the electionId in subject and body
-						'mail_content_subject' => 'Wahlschein erstellt',
-						'mail_content_body' => 'Hallo!
-
-Sie haben für die Abstimmung >$electionId< einen Wahlschein erstellt.
-Falls dies nicht zutreffen sollte, wenden Sie sich bitte umgehend an einen Abstimmungsverantwortlichen.
-
-Freundliche Grüße
-Das Wahlteam'
-				)
-		),
-
-		// In case you are using the "external token" method (cmrcx-Baisentscheid) for checking egibility,
-		// fill in the following section.
-		'externalTokenConfig' => array (
-				array (
-
-						// Arbitrary and unique, must match VVVOTE_CONFIG_ID in the configuration of the
-						// basisentscheid server.
-						// This is used to identify this config. It is used in the newelection.php call to
-						// select this auth configuration.
-						'configId' => 'basisentscheid_offen',
-
-						// URL base which is used to check if the token is valid and the corresponding user is
-						// allowed to vote and to send the confirmation email after generating the voting
-						// certificate.
-						'checkerUrl' => 'https://basisentscheid.piratenpartei-bayern.de/offen/',
-
-						// Password needed to authorize the check token request.
-						// It must match one of the VVVOTE_CHECK_TOKEN_PASSWORDS in the basisentscheid configuration.
-						'verifierPassw' => 'mysecret',
-
-						// This must be set to true as the external token auth security relies on SSL/TLS.
-						// In order to do so:
-						// Use the command php -f backend/admin/retrieve-tls-chains.php in order to retrieve
-						// all certificate chains needed.
-						// That will place the needed certificate and their's complete chain (just concated)
-						// in the directory 'tls-certificates' under the directory of this config file and
-						// name them [hostname.domain].pem (replacing "[hostname.domain]" with the target host.
-						'verifyCertificate' => true
-				),
-			)
 		// If you use the default dirs, nothing needs to be changed here.
 		// It can be absolut (URL allowed) or relativ to api/v1/index.php
 		// defaults to '../../webclient/';

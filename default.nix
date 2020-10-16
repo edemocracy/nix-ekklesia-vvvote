@@ -18,18 +18,15 @@ vars =
 
 vvvote = pkgs.callPackage ./vvvote.nix { inherit vars php; };
 
-uwsgiConfig = pkgs.writeText "vvvote_backend-uwsgi.ini" (scopedImport { inherit vars vvvote; } ./backend-uwsgi.ini.nix);
-
-startscript = pkgs.writeScriptBin "vvvote_backend-uwsgi.sh" ''
-  ${uwsgi}/bin/uwsgi ${uwsgiConfig} "$@"
-'';
+startscript = pkgs.writeScriptBin "vvvote-backend.sh" (with vars.backend; ''
+  cd ${vvvote}/backend
+  ${php}/bin/php -S ${httpAddress}:${toString httpPort} "$@"
+'');
 
 adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
   cd ${vvvote}/backend
-  ${php}/bin/php -f admin.php "$@"
+  ${php}/bin/php -f admin/admin.php "$@"
 '';
-
-webclientScript = pkgs.writeScriptBin "serve-webclient.py" (scopedImport { inherit vars vvvote; } ./serve-webclient.py.nix);
 
 varsForDebugOutput = removeAttrs vars ["__unfix__"];
 
@@ -39,12 +36,10 @@ in pkgs.stdenv.mkDerivation {
   phases = [ "installPhase" "fixupPhase" ];
   installPhase = ''
     mkdir -p $out/bin
-    ln -s ${startscript}/bin/vvvote_backend-uwsgi.sh $out/bin/
+    ln -s ${startscript}/bin/vvvote-backend.sh $out/bin/
     ln -s ${adminscript}/bin/vvvote-admin.sh $out/bin/
-    ln -s ${webclientScript}/bin/serve-webclient.py $out/bin/
 
     # not needed in production, but helpful for debugging
-    ln -s ${uwsgiConfig} $out/vvvote_backend-uwsgi.ini
     ln -s ${vvvote} $out/vvvote
     ln -s ${pkgs.writeText "config.json" (builtins.toJSON varsForDebugOutput)} $out/config.json
   '';

@@ -50,7 +50,7 @@ ClientConfig.storeVoteUrls      = serverinfos.tServerStoreVoteUrls; //do not use
 ClientConfig.getResultUrl      = server1url + 'getresult'; //?XDEBUG_SESSION_START=ECLIPSE_DBGP&KEY=13727034088813';
 
 // TODO make anonymize a config in backend/config
-ClientConfig.anonymizerUrl = '${if useAnonServer then "http://anonymouse.org/cgi-bin/anon-www_de.cgi/" else ""}; // used to change the ip and to strip browser infos / with trailing slash
+ClientConfig.anonymizerUrl = '${if useAnonServer then "http://anonymouse.org/cgi-bin/anon-www_de.cgi/" else ""}'; // used to change the ip and to strip browser infos / with trailing slash
 ClientConfig.voteClientUrl = server2url + 'getclient';
 
 ClientConfig.oAuth2Config = serverinfos.authModules.oAuth2;
