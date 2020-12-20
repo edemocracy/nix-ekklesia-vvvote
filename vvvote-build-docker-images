@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-nix-build docker.nix --arg customVarsPath ./custom_vars_local_server_1.nix --argstr imageName vvvote1 -o docker_vvvote1.tar.gz
-nix-build docker.nix --arg customVarsPath ./custom_vars_local_server_2.nix --argstr imageName vvvote2 -o docker_vvvote2.tar.gz
+nix-build docker.nix --arg customVarsPath ./custom_vars_docker_1.nix --argstr imageName vvvote1 -o docker_vvvote1.tar.gz
+nix-build docker.nix --arg customVarsPath ./custom_vars_docker_2.nix --argstr imageName vvvote2 -o docker_vvvote2.tar.gz
 docker load < docker_vvvote1.tar.gz
 docker load < docker_vvvote2.tar.gz

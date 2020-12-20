@@ -9,17 +9,27 @@ let
   php = pkgs.php74.withExtensions ({ enabled, all }:
     with all; [ session pdo_mysql gmp json curl ]
    );
-  uwsgi = pkgs.uwsgi.override { plugins = [ "php" ]; inherit php; };
+
+  vvvote = pkgs.callPackage ./vvvote.nix {
+    inherit php;
+    vvvoteSrc = sources_.vvvote;
+  };
+
+  adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
+    cd ${vvvote}/backend
+    ${php}/bin/php -f admin/admin.php "$@"
+  '';
+
 
 in rec {
-  inherit pkgs php mylib uwsgi;
+  inherit pkgs php mylib vvvote;
   inherit (pkgs) lib glibcLocales;
 
   shellTools = [
     niv
     php
     pkgs.entr
-    uwsgi
+    adminscript
   ];
 
   shellInputs = shellTools;

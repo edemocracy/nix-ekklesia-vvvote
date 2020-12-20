@@ -5,7 +5,6 @@ server2Override = self: super: default: {
   isTallyServer = true;
   db.name = "vvvote2";
   backend = {
-    socketPort = 20002;
     httpPort = 10002;
   };
 };

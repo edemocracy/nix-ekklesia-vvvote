@@ -22,5 +22,17 @@
         "type": "tarball",
         "url": "https://github.com/NixOS/nixpkgs/archive/b94726217f7cdc02ddf277b65553762d520da196.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "vvvote": {
+        "branch": "master",
+        "description": "Cryptographic Anonymized Online Voting System",
+        "homepage": "http://www.vvvote.de",
+        "owner": "vvvote",
+        "repo": "vvvote",
+        "rev": "458830c6e4946005bc0a89957ff5c79af85654a0",
+        "sha256": "1crv393v32v9chs0sawcdkx91v2fjakqmpaib3l6rkzja2c5p071",
+        "type": "tarball",
+        "url": "https://github.com/vvvote/vvvote/archive/458830c6e4946005bc0a89957ff5c79af85654a0.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

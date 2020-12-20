@@ -26,12 +26,10 @@ You can visit `http://localhost:10003` now.
 
 ## Nix Files In This Repo
 
--   `vvvote.nix`: This Nix expression builds and installs a VVVote (backend + webclient) instance
--   `uwsgi.nix`: Custom uwsgi with PHP support
--   `default.nix`: Runs the installation process. Builds config
--   `src.nix`: Controls which VVVote version is used
--   `nixpkgs.nix`: Controls which nixpkgs version is used for build tools and VVVote dependencies
--   `conf-allservers.php.nix, conf-thisserver.php.nix, config.js.nix`: VVVote configuration template files
+- `nix/vvvote.nix`: This Nix expression packages the VVVote code.
+- `nix/sources.json`: Controls which nixpkgs and VVVote version is used.
+- `default.nix`: Runs the installation process. Builds config.
+- `config.php.nix, config.js.nix`: VVVote configuration template files.
 - `*vars*.nix`: vars files contain the settings that influence the build process or customize the configuration files built from templates.
 
 
@@ -44,6 +42,6 @@ See the `vvvote-local` script as an example how to build and run the two VVVote 
 
 ## Building VVVote Docker Images
 
-The Nix expression in `docker.nix` builds image tars that can be used with Docker.  (Private) keys must be copied to the Nix store and then to the image, so the setting `copy_keys_to_store` must be set to `true` and `keydir` must be a path, absolute or relative (without double quotes). `uwsgi.http_address` should be set to `""` (empty string) so HTTP can be reached from outside the container.
+The Nix expression in `docker.nix` builds image tars that can be used with Docker.  (Private) keys must be copied to the Nix store and then to the image, so the setting `copyKeysToStore` must be set to `true` and `keydir` must be a path, absolute or relative (without double quotes). `httpAddress` should be set to `"0.0.0.0"` (empty string) so HTTP can be reached from outside the container.
 
 Have a look at `vvvote-build-docker-images` to see how to build and import images into Docker.
