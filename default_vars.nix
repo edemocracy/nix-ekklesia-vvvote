@@ -1,9 +1,11 @@
 self: {
   debug = true;
-  keydir = null;
-  # By default, keys are linked from keydir to the Nix store. Activate the following setting to copy them instead.
+  compileWebclient = false;
+  publicKeydir = null;
+  privateKeydir = null;
+  # By default, private keys are linked from keydir to the Nix store. Activate the following setting to copy them instead.
   # !!!WARNING: private keys will be world-readable in the Nix store when this is set to true!!!
-  copyKeysToStore = false;
+  copyPrivateKeysToStore = false;
   serverNumber = 1; # position of this server, starts with 1
   # urls for the backend servers. The first server is pos 1, the second pos 2 and so on.
   backendUrls = [ "http://localhost/backend1" "http://localhost/backend2" ];

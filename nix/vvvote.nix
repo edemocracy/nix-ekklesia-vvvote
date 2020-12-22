@@ -10,5 +10,6 @@ pkgs.stdenv.mkDerivation {
   installPhase = ''
     cp -r . $out
     cp -r $out/backend/modules-auth/oauth $out/backend/modules-auth/oauth2
+    cp $out/backend/webclient-sources/config/config-example.js $out/backend/webclient-sources/config/config.js
   '';
 }

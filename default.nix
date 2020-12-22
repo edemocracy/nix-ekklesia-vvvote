@@ -29,14 +29,25 @@ backendConfigFile = pkgs.writeText "config.php" backendConfig;
 webclientConfigFile = pkgs.writeText "config.js" webclientConfig;
 backendHttpdConfigFile = pkgs.writeText "backend-httpd.conf" backendHttpdConfig;
 
-keydir = if (!(isString vars.keydir) && vars.copyKeysToStore == false) then
-  throw ''keydir cannot be a path (without quotes) when copy_keys_to_store is not enabled! Paths are copied to the Nix store which may be a security risk! Use a string with double quotes as keydir and copy_keys_to_store = false to link keys to the Nix store. This only works when Nix sandboxing is not enabled. If you want to copy the keys to the Nix store, set copy_keys_to_store = true.'' else vars.keydir;
+privateKeydir =
+  if (!(isString vars.privateKeydir) && vars.copyPrivateKeysToStore == false) then
+    throw ''
+      privateKeydir cannot be a path (without quotes) when copyPrivateKeysToStore is not enabled!
+      Paths are copied to the Nix store which may be a security risk!
 
-permissionPublicKeyFiles = if (vars.keydir == null) then [] else
-  map (i: "${keydir}/PermissionServer${toString i}.publickey.pem") (lib.range 1 (length vars.backendUrls));
+      Use a string with double quotes as keydir and copyPrivateKeysToStore = false to link keys to the Nix store.
+      This only works when Nix sandboxing is not enabled.
 
-tallyPublicKeyFiles = if (vars.keydir == null) then [] else
-  map (i: "${keydir}/TallyServer${toString i}.publickey.pem") vars.tallyServerNumbers;
+      If you really want to copy the keys to the Nix store, set copyPrivateKeysToStore = true.''
+  else vars.privateKeydir;
+
+publicKeydir = vars.publicKeydir;
+
+permissionPublicKeyFiles = if (vars.publicKeydir == null) then [] else
+  map (i: "${publicKeydir}/PermissionServer${toString i}.publickey.pem") (lib.range 1 (length vars.backendUrls));
+
+tallyPublicKeyFiles = if (vars.publicKeydir == null) then [] else
+  map (i: "${publicKeydir}/TallyServer${toString i}.publickey.pem") vars.tallyServerNumbers;
 
 publicKeyFiles = permissionPublicKeyFiles ++ tallyPublicKeyFiles;
 
@@ -45,17 +56,18 @@ backendConfigDir = pkgs.runCommand "vvvote-backend-config" {} (''
   # linking doesn't work because PHP uses the location of the real file for __DIR__
   cp ${backendConfigFile} $out/config.php
 ''
-+ lib.optionalString (vars.keydir != null) ''
++ lib.optionalString (vars.publicKeydir != null) ''
   key_dir=$out/voting-keys
   mkdir $key_dir
-  # link public server keys (optional: pass them as argument?)
-  ${lib.concatMapStringsSep "\n" (k: "ln -s ${k} $key_dir") publicKeyFiles}
-
-  # link private keys
-  ln -s ${keydir}/PermissionServer${toString vars.serverNumber}.privatekey.pem.php $key_dir
+  # copy public server keys (optional: pass them as argument?)
+  ${lib.concatMapStringsSep "\n" (k: "cp ${k} $key_dir") publicKeyFiles}
 ''
-+ lib.optionalString (vars.keydir != null && vars.isTallyServer) ''
-  ln -s ${keydir}/TallyServer${toString vars.serverNumber}.privatekey.pem.php $key_dir
++ lib.optionalString (vars.privateKeydir != null) ''
+  # link private keys
+  ln -s ${privateKeydir}/PermissionServer${toString vars.serverNumber}.privatekey.pem.php $key_dir
+''
++ lib.optionalString (vars.privateKeydir != null && vars.isTallyServer) ''
+  ln -s ${privateKeydir}/TallyServer${toString vars.serverNumber}.privatekey.pem.php $key_dir
 '');
 
 varsForDebugOutput = removeAttrs vars ["__unfix__"];
@@ -90,11 +102,11 @@ in pkgs.stdenv.mkDerivation {
     # not needed in production, but helpful for debugging
     ln -s ${vvvote} $out/vvvote
     ln -s ${backendConfigDir} $out/config
-    ln -s ${pkgs.writeText "config.json" (builtins.toJSON varsForDebugOutput)} $out/config.json
+    ln -s ${pkgs.writeText "vars.json" (builtins.toJSON varsForDebugOutput)} $out/vars.json
   ''
   # optimization: compile webclient
-  # running the getclient.php script requires the keys, so we can only do that when a keydir is given
-  + lib.optionalString (vars.keydir != null) ''
+  # running the getclient.php script requires the private keys, so we can only do that when a private keydir is given
+  + lib.optionalString (vars.compileWebclient && vars.privateKeydir != null) ''
     mkdir $out/webclient
     cd $out/backend
     export VVVOTE_CONFIG_DIR="${backendConfigDir}"

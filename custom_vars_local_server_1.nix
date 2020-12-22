@@ -1,6 +1,8 @@
 self: default: {
-  keydir = /home/ts/data_git/vvvote/keys;
-  copyKeysToStore = true;
+  publicKeydir = /home/ts/data_git/vvvote/public_keys;
+  privateKeydir = "/var/tmp/vvvote/private_keys";
+  compileWebclient = true;
+  copyPrivateKeysToStore = false;
   useAnonServer = false;
   backendUrls = [ "http://localhost/backend1" "http://localhost/backend2" ];
   idServerUrl = "https://keycloak.test.ekklesiademocracy.org/auth/realms/test/protocol/openid-connect/";

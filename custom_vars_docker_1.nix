@@ -1,6 +1,7 @@
 let
 server1Conf = import ./custom_vars_local_server_1.nix;
 dockerOverride = self: super: default: {
+  compileWebclient = false;
   backend = {
     httpAddress = "0.0.0.0";
   };
