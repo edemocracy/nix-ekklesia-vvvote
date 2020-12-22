@@ -8,7 +8,7 @@ let
   mylib = pkgs.callPackage ./mylib.nix {};
   php = pkgs.php74.withExtensions ({ enabled, all }:
     with all; [ session pdo_mysql gmp json curl ]
-   );
+  );
 
   vvvote = pkgs.callPackage ./vvvote.nix {
     inherit php;
@@ -23,7 +23,7 @@ let
 
 in rec {
   inherit pkgs php mylib vvvote;
-  inherit (pkgs) lib glibcLocales;
+  inherit (pkgs) apacheHttpd lib glibcLocales;
 
   shellTools = [
     niv
