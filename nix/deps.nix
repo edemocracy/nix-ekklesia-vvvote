@@ -6,13 +6,15 @@ let
   pkgs = import sources_.nixpkgs { };
   niv = (import sources_.niv { }).niv;
   mylib = pkgs.callPackage ./mylib.nix {};
-  php = pkgs.php74.withExtensions ({ enabled, all }:
+  apacheHttpd = pkgs.callPackage ./apache.nix {};
+  php = (pkgs.php74.override { inherit apacheHttpd; }).withExtensions ({ enabled, all }:
     with all; [ session pdo_mysql gmp json curl ]
   );
 
   vvvote = pkgs.callPackage ./vvvote.nix {
     inherit php;
     vvvoteSrc = sources_.vvvote;
+    disableAnonServer = true;
   };
 
   adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''
@@ -22,8 +24,8 @@ let
 
 
 in rec {
-  inherit pkgs php mylib vvvote;
-  inherit (pkgs) apacheHttpd lib glibcLocales;
+  inherit apacheHttpd pkgs php mylib vvvote;
+  inherit (pkgs) lib glibcLocales;
 
   shellTools = [
     niv

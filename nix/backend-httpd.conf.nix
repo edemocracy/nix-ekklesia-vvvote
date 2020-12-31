@@ -1,4 +1,6 @@
-{ lib, php, vvvote, apacheHttpd, vars }:
+{ lib, php, vvvote, apacheHttpd, listen
+  , errorLog ? "/dev/stderr"
+  , customLog ? "/dev/stdout" }:
 
 with builtins;
 
@@ -13,13 +15,12 @@ let
     "negotiation"
     "alias"
     "rewrite"
+    "journald"
     "unixd"
     "slotmem_shm" "socache_shmcb"
     "mpm_event"
     { name = "php${phpMajorVersion}"; path = "${php}/modules/libphp${phpMajorVersion}.so"; }
   ];
-
-  listen = with vars; "${backend.httpAddress}:${toString backend.httpPort}";
 
 in ''
 ${let
@@ -40,10 +41,10 @@ ServerName localhost
 AddHandler type-map var
 AddType application/x-httpd-php .php
 
-ErrorLog /dev/stderr
+ErrorLog ${errorLog}
 LogLevel notice
 LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
-CustomLog /dev/stdout combined
+CustomLog ${customLog} combined
 
 TraceEnable off
 
