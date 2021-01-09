@@ -47,7 +47,6 @@ in pkgs.stdenv.mkDerivation {
     chmod a+x $out/bin/vvvote-backend.sh
   ''
   # optimization: compile webclient
-  # running the getclient.php script requires the private keys, so we can only do that when a private keydir is given
   + lib.optionalString compileWebclient ''
     mkdir $out/webclient
     cd $out/backend

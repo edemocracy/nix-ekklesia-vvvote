@@ -29,10 +29,10 @@
         "homepage": "http://www.vvvote.de",
         "owner": "vvvote",
         "repo": "vvvote",
-        "rev": "458830c6e4946005bc0a89957ff5c79af85654a0",
-        "sha256": "1crv393v32v9chs0sawcdkx91v2fjakqmpaib3l6rkzja2c5p071",
+        "rev": "11928a3f6982d6f4c9d8a825c0fc327dda056fb8",
+        "sha256": "1bc5wg35rcyzlh8xn6xgfkz6q7jgn9c38wkbjixsdbs9jpd5pv2c",
         "type": "tarball",
-        "url": "https://github.com/vvvote/vvvote/archive/458830c6e4946005bc0a89957ff5c79af85654a0.tar.gz",
+        "url": "https://github.com/vvvote/vvvote/archive/11928a3f6982d6f4c9d8a825c0fc327dda056fb8.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

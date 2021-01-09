@@ -1,6 +1,6 @@
 self: {
   debug = true;
-  compileWebclient = false;
+  compileWebclient = true;
   publicKeydir = null;
   privateKeydir = null;
   # By default, private keys are linked from keydir to the Nix store. Activate the following setting to copy them instead.

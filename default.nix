@@ -23,9 +23,11 @@ let
 
   listen = with vars; "${backend.httpAddress}:${toString backend.httpPort}";
   pidfile = "/dev/shm/vvvote_${toString vars.serverNumber}.pid";
-  compileWebclient = vars.compileWebclient && vars.privateKeydir != null;
 
   backendConfigDir = pkgs.callPackage ./nix/config_dir.nix { inherit sources vars; };
-  serveApp = pkgs.callPackage ./nix/serve_app.nix { inherit sources backendConfigDir listen pidfile compileWebclient; };
+  serveApp = pkgs.callPackage ./nix/serve_app.nix {
+    inherit sources backendConfigDir listen pidfile;
+    inherit (vars) compileWebclient;
+  };
 
 in serveApp
