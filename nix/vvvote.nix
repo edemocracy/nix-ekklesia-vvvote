@@ -4,9 +4,8 @@ pkgs.stdenv.mkDerivation {
   name = "vvvote";
   src = vvvoteSrc;
 
-  patches = [
-    ./0001-always-use-internal-ssl.patch
-  ] ++ lib.optional disableAnonServer ./0002-disable-anon-server.patch;
+  patches =
+    lib.optional disableAnonServer ./0001-disable-anon-server.patch;
 
   dontBuild = true; # nothing to build for this PHP / JS app ;)
   installPhase = ''

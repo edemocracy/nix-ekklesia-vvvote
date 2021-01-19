@@ -1,3 +1,16 @@
+diff --git a/backend/tools/loadconfig.php b/backend/tools/loadconfig.php
+index c71d836..f3db54d 100644
+--- a/backend/tools/loadconfig.php
++++ b/backend/tools/loadconfig.php
+@@ -132,7 +132,7 @@ date_default_timezone_set ( 'Europe/Berlin' ); // this is only used to avoid a w
+ $tServerStoreVoteUrls = array();
+ foreach ( $tServerStoreVotePorts as $key => $value ) {
+ 	$urltmp = parse_url ( $pServerUrlBases [$key] );
+-	$tServerStoreVoteUrls[$key] = 'http://' . $urltmp ['host'] . ':' . $tServerStoreVotePorts [$key] . $urltmp ['path'] . 'storevote';
++	$tServerStoreVoteUrls[$key] = 'https://' . $urltmp ['host'] . ':' . $tServerStoreVotePorts [$key] . $urltmp ['path'] . 'storevote';
+ }
+ 
+ // number of ballots the servers have to sign 0: first signing server, 1: second signing server...
 diff --git a/backend/webclient-sources/config/config-example.js b/backend/webclient-sources/config/config-example.js
 index cfeda4e..0305f92 100644
 --- a/backend/webclient-sources/config/config-example.js
