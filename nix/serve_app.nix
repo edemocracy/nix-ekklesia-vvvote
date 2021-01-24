@@ -34,7 +34,8 @@ in pkgs.stdenv.mkDerivation {
 
     cat << EOF > $out/bin/vvvote-backend.sh
     #!${pkgs.runtimeShell}
-    export VVVOTE_CONFIG_DIR=${backendConfigDir}
+    export VVVOTE_CONFIG_DIR=\''${VVVOTE_CONFIG_DIR:-${backendConfigDir}}
+    echo "using config dir \$VVVOTE_CONFIG_DIR"
     export PHPRC=${php.phpIni}
 
     ${apacheHttpd}/bin/httpd \
