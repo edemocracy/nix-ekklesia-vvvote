@@ -5,10 +5,18 @@ with builtins;
 let
   cfg = config.services.ekklesia.vvvote;
 
-  vars =
+  varsInsecure =
     lib.recursiveUpdate
       (lib.fix (import ../default_vars.nix))
       cfg.settings;
+
+  # Override secrets with placeholders. Will be replaced on startup.
+  vars =
+    lib.recursiveUpdate
+      varsInsecure {
+        oauth.clientSecret = "@oauthClientSecret@";
+        oauth.notifyClientSecret = "@notifyClientSecret@";
+      };
 
   serveApp = pkgs.callPackage ../nix/serve_app.nix {
     listen = "${cfg.address}:${toString cfg.port}";
@@ -71,6 +79,18 @@ in {
         description = "Address for backend app server";
       };
 
+      notifyClientSecretFile = mkOption {
+        type = types.str;
+        description = "Path to file containing the secret for ekklesia-notify";
+        default = "/var/lib/vvvote/notifyClientSecret";
+      };
+
+      oauthClientSecretFile = mkOption {
+        type = types.str;
+        description = "Path to file containing the client secret for OAuth 2/OpenID Connect";
+        default = "/var/lib/vvvote/oauthClientSecret";
+      };
+
       settings = mkOption {
         type = types.submodule {
           freeformType = types.attrs;
@@ -104,17 +124,76 @@ in {
         after = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
 
+        preStart = let
+         replaceSecret = file: var: secretFile:
+          "${pkgs.replace}/bin/replace-literal -m 1 -vv -f -e @${var}@ $(< ${secretFile}) ${file}";
+        in ''
+          cfgdir=$RUNTIME_DIRECTORY
+          cp -Lr ${serveApp}/config/* $cfgdir
+          chmod u+w -R $cfgdir
+          ${replaceSecret "$cfgdir/config.php" "oauthClientSecret" cfg.oauthClientSecretFile}
+          ${replaceSecret "$cfgdir/config.php" "notifyClientSecret" cfg.notifyClientSecretFile}
+        '';
+
+        script = ''
+          VVVOTE_CONFIG_DIR=$RUNTIME_DIRECTORY ${serveApp}/bin/vvvote-backend.sh
+         '';
+
         serviceConfig = {
           User = cfg.user;
           Group = cfg.group;
-          ExecStart = "${serveApp}/bin/vvvote-backend.sh";
           DeviceAllow = [
             "/dev/stderr"
             "/dev/stdout"
           ];
-          DevicePolicy = "strict";
           RuntimeDirectory = "vvvote";
+          StateDirectory = "vvvote";
+          RestartSec = "5s";
+          Restart = "always";
           X-ServeApp = serveApp;
+
+          # Some security hardening.
+          # Gets a 1.4 OK score from systemd-analyze security on NixOS 20.09.
+          AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
+          CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" ];
+          DevicePolicy = "strict";
+          LockPersonality = true;
+          NoNewPrivileges = true;
+          PrivateDevices = true;
+          PrivateTmp = true;
+          PrivateUsers = true;
+          ProtectClock = true;
+          ProtectControlGroups = true;
+          ProtectHome = true;
+          ProtectHostname = true;
+          ProtectKernelLogs = true;
+          ProtectKernelModules = true;
+          ProtectKernelTunables = true;
+          ProtectSystem = "strict";
+          RemoveIPC = true;
+          RestrictAddressFamilies = [ "AF_INET" "AF_INET6" "AF_UNIX" ];
+          RestrictNamespaces = true;
+          RestrictRealtime = true;
+          RestrictSUIDSGID = true;
+          SystemCallArchitectures = "native";
+          SystemCallFilter = [
+            # deny the following syscall groups
+            "~@clock"
+            "~@debug"
+            "~@module"
+            "~@mount"
+            "~@reboot"
+            "~@cpu-emulation"
+            "~@swap"
+            "~@obsolete"
+            "~@privileged"
+            "~@resources"
+            "~@raw-io"
+            # explicitly allow the following syscall groups
+            "@chown"
+          ];
+          UMask = "077";
+
         };
       };
 
