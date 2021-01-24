@@ -1,5 +1,5 @@
 self: {
-  debug = true;
+  debug = false;
   compileWebclient = true;
   publicKeydir = null;
   privateKeydir = null;
@@ -49,9 +49,9 @@ self: {
     serverId = "ekklesia";
     serverDesc = "ID Server";
     clientIds =  [ "vvvote" "vvvote2" ];
-    clientSecrets = [ "vvvote" "vvvote2" ];
+    clientSecret = "invalidClientSecret";
     notifyClientId = "example_app";
-    notifyClientSecret = "eeee";
+    notifyClientSecret = "invalidNotifyClientSecret";
     notifyUrl = "https://notify.invalid/freeform_message";
     oauthUrl = self.idServerUrl;
     resourcesUrl = self.idServerUrl;

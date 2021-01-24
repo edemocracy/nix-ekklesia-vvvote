@@ -22,7 +22,7 @@ $config = array (
 		// uncomment, if you need to change it..
 		// This value must be the same on all Vvvote (permission) servers.
 		// defaults to 'tServerStoreVotePorts' => array ('80', '80'),
-		'tServerStoreVotePorts' => array (${toPhpString votePort}, '80'),
+		'tServerStoreVotePorts' => array (${toPhpString votePort}, ${toPhpString votePort}),
 
 
 		// URL to your organisations's website
@@ -40,7 +40,7 @@ $config = array (
 		// If debug is set and some error occurs, Vvvote will send possibly sensetive data
 		// to the client which gives more information what caused the error.
 		// defaults to false. In a productive environment, always set this to false.
-		'debug' => true,
+		'debug' => ${toString debug},
 
 		// put the credentials for the database connection here
 		'dbInfos' => array (
@@ -80,7 +80,7 @@ $config = array (
 						'client_ids' => ${toPhpStringArray oauth.clientIds},
 
 						// OAuth2 client secret needed for authentication at the OAuth2 server
-						'client_secret' => '${elemAt oauth.clientSecrets (serverNumber - 1)}',
+						'client_secret' => '${oauth.clientSecret}',
 
 						// Hint for the configuration of the oAuh2 server:
 						// Most oAuth2 servers require that you provide a callback-URL in order to make the authorization work.
