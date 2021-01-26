@@ -91,20 +91,42 @@ in {
         default = "/var/lib/vvvote/oauthClientSecret";
       };
 
+      permissionPrivateKeyFile = mkOption {
+        type = types.str;
+        description = "Path to file containing the private key (if server acts as permission server)";
+        example = "/var/lib/vvvote/PermissionServer1.privatekey.pem.php";
+      };
+
+      tallyPrivateKeyFile = mkOption {
+        type = types.str;
+        description = "Path to file containing the private key (if server acts as tally server)";
+        example = "/var/lib/vvvote/PermissionServer1.privatekey.pem.php";
+      };
+
       settings = mkOption {
         type = types.submodule {
           freeformType = types.attrs;
           options = {
+
             serverNumber = mkOption {
               type = types.ints.positive;
               default = 1;
             };
-            privateKeydir = mkOption {
-              type = with types; (either path str);
-            };
+
             publicKeydir = mkOption {
               type = types.path;
             };
+
+            isTallyServer = mkOption {
+              type = types.bool;
+              default = true;
+            };
+
+            isPermissionServer = mkOption {
+              type = types.bool;
+              default = true;
+            };
+
           };
         };
         default = {};
@@ -125,14 +147,23 @@ in {
         wantedBy = [ "multi-user.target" ];
 
         preStart = let
+         replaceDebug = lib.optionalString cfg.settings.debug "-vv";
          replaceSecret = file: var: secretFile:
-          "${pkgs.replace}/bin/replace-literal -m 1 -vv -f -e @${var}@ $(< ${secretFile}) ${file}";
+          "${pkgs.replace}/bin/replace-literal -m 1 ${replaceDebug} -f -e @${var}@ $(< ${secretFile}) ${file}";
+          serverNumber = cfg.settings.serverNumber;
         in ''
           cfgdir=$RUNTIME_DIRECTORY
+          keydir=$cfgdir/voting-keys
           cp -Lr ${serveApp}/config/* $cfgdir
           chmod u+w -R $cfgdir
           ${replaceSecret "$cfgdir/config.php" "oauthClientSecret" cfg.oauthClientSecretFile}
           ${replaceSecret "$cfgdir/config.php" "notifyClientSecret" cfg.notifyClientSecretFile}
+        ''
+        + lib.optionalString cfg.settings.isTallyServer ''
+          cp ${cfg.tallyPrivateKeyFile} $keydir/TallyServer${toString serverNumber}.privatekey.pem.php
+        ''
+        + lib.optionalString cfg.settings.isPermissionServer ''
+          cp ${cfg.permissionPrivateKeyFile} $keydir/PermissionServer${toString serverNumber}.privatekey.pem.php
         '';
 
         script = ''
