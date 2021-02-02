@@ -108,6 +108,11 @@ in {
           freeformType = types.attrs;
           options = {
 
+            debug = mkOption {
+              type = types.bool;
+              default = false;
+            };
+
             serverNumber = mkOption {
               type = types.ints.positive;
               default = 1;
