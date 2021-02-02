@@ -2,6 +2,7 @@ with vars;
 with builtins;
 let
 	toPhpString = s: "'${toString s}'";
+	toPhpBool = s: if s then "true" else "false";
 	toPhpStringArray = ll: "array(${lib.concatMapStringsSep ", " toPhpString ll})";
 in ''
 <?php
@@ -40,7 +41,7 @@ $config = array (
 		// If debug is set and some error occurs, Vvvote will send possibly sensetive data
 		// to the client which gives more information what caused the error.
 		// defaults to false. In a productive environment, always set this to false.
-		'debug' => ${toString debug},
+		'debug' => ${toPhpBool debug},
 
 		// put the credentials for the database connection here
 		'dbInfos' => array (

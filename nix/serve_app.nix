@@ -52,6 +52,12 @@ in pkgs.stdenv.mkDerivation {
     mkdir $out/webclient
     cd $out/backend
     export VVVOTE_CONFIG_DIR="${backendConfigDir}"
-    php getclient.php > $out/webclient/index.html
+    rc=0
+    php getclient.php > $out/webclient/index.html || rc=$?
+    if [[ $rc != 0 ]]; then
+      echo "compiling the webclient failed:"
+      cat $out/webclient/index.html
+      exit $rc
+    fi
   '';
 }
