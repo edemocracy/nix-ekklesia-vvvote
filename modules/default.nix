@@ -231,6 +231,14 @@ in {
           UMask = "077";
 
         };
+        unitConfig = {
+          Documentation = [
+            "https://github.com/edemocracy/nix-ekklesia-vvvote"
+            "https://github.com/vvvote/vvvote"
+            "https://www.vvvote.de"
+            "https://ekklesiademocracy.org"
+          ];
+        };
       };
 
       users.users.vvvote = {
