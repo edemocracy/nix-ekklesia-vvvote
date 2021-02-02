@@ -61,6 +61,11 @@ in {
         default = false;
       };
 
+      createDatabaseLocally = mkOption {
+        type = types.bool;
+        default = false;
+      };
+
       group = mkOption {
         type = types.str;
         default = "vvvote";
@@ -108,6 +113,35 @@ in {
           freeformType = types.attrs;
           options = {
 
+            db = mkOption {
+              default = {};
+              type = types.submodule {
+                options = {
+
+                  name = mkOption {
+                    type = types.str;
+                    default = "vvvote";
+                  };
+
+                  host = mkOption {
+                    type = types.str;
+                    default = "localhost";
+                  };
+
+                  user = mkOption {
+                    type = types.str;
+                    default = "vvvote";
+                  };
+
+                  prefix = mkOption {
+                    type = types.str;
+                    default = "";
+                  };
+
+                };
+              };
+            };
+
             debug = mkOption {
               type = types.bool;
               default = false;
@@ -141,6 +175,27 @@ in {
   };
 
   config = lib.mkMerge [
+    {
+      assertions = [
+        {
+          assertion = !(cfg.createDatabaseLocally && (cfg.settings.db.host != "localhost"));
+          message = "Database can only be created on localhost, but host is set to ${cfg.settings.db.host}";
+        }
+      ];
+    }
+
+    (lib.mkIf cfg.createDatabaseLocally {
+      services.mysql.ensureDatabases = [ cfg.settings.db.name ];
+      services.mysql.ensureUsers = [
+        {
+          name = cfg.settings.db.user;
+          ensurePermissions = {
+            "${cfg.settings.db.name}.*" = "ALL PRIVILEGES";
+          };
+        }
+      ];
+
+    })
 
     (lib.mkIf cfg.enableBackend {
       services.nginx.virtualHosts."${cfg.backendHostname}".locations =

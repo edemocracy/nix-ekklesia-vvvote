@@ -34,9 +34,8 @@ self: {
   db = {
     name = "vvvote";
     host = "localhost";
-    port = "3307";
     user = "vvvote";
-    password = "vvvote";
+    password = "";
     prefix = "";
   };
 
