@@ -21,7 +21,7 @@ This should work on all Linux distributions and MacOS. You need the [Nix package
 3. Create the MySQL databases and grant access: `mysql prepare-databases.sql` (mysql call depends on your MySQL configuration)
 4. Run VVVote: `./vvvote-quickstart`
 
-The last line in the output should say _serving at port 10003_.
+The last lines should show two running Apache instances.
 You can visit `http://localhost:10002/getclient.php` now.
 
 ## Nix Files In This Repo
