@@ -1,4 +1,6 @@
 self: default: {
-  keydir = ./quickstart;
-  copy_keys_to_store = true;
+  publicKeydir = ./quickstart/voting-keys;
+  privateKeydir = ./quickstart/voting-keys;
+  copyPrivateKeysToStore = true;
+  debug = false;
 }

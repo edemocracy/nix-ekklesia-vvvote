@@ -8,7 +8,7 @@ self: {
   copyPrivateKeysToStore = false;
   serverNumber = 1; # position of this server, starts with 1
   # urls for the backend servers. The first server is pos 1, the second pos 2 and so on.
-  backendUrls = [ "http://localhost/backend1" "http://localhost/backend2" ];
+  backendUrls = [ "http://localhost:10001" "http://localhost:10002" ];
   idServerUrl = "https://id.localhost";
   hostingOrganisationUrl = "";
   mailContentSubject = "Wahlschein erstellt";

@@ -16,20 +16,22 @@ This should work on all Linux distributions and MacOS. You need the [Nix package
 
 ### How Is It Done?
 
-1. Clone the repository: `git clone https://github.com/dpausp/nix-ekklesia-vvvote`
+1. Clone the repository: `git clone https://github.com/edemocracy/nix-ekklesia-vvvote`
 2. Go to the nix-ekklesia-vvvote directory: `cd nix-ekklesia-vvvote`
 3. Create the MySQL databases and grant access: `mysql prepare-databases.sql` (mysql call depends on your MySQL configuration)
 4. Run VVVote: `./vvvote-quickstart`
 
 The last line in the output should say _serving at port 10003_.
-You can visit `http://localhost:10003` now.
+You can visit `http://localhost:10002/getclient.php` now.
 
 ## Nix Files In This Repo
 
+- `nix/config.php.nix`: VVVote configuration template.
 - `nix/vvvote.nix`: This Nix expression packages the VVVote code.
 - `nix/sources.json`: Controls which nixpkgs and VVVote version is used.
-- `default.nix`: Runs the installation process. Builds config.
-- `config.php.nix, config.js.nix`: VVVote configuration template files.
+- `nix/serve_app.nix` Runs the installation process.
+- `nix/config_dir.nix` Builds config.
+- `default.nix`: Entrypoint for standalone mode.
 - `*vars*.nix`: vars files contain the settings that influence the build process or customize the configuration files built from templates.
 
 
