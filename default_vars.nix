@@ -1,6 +1,10 @@
 self: {
-  debug = false;
   compileWebclient = true;
+  dataProtectionPolicy = {
+    default = "Data Protection Policy";
+    de = "Datenschutzerklärung";
+  };
+  debug = false;
   publicKeydir = null;
   privateKeydir = null;
   # By default, private keys are linked from keydir to the Nix store. Activate the following setting to copy them instead.

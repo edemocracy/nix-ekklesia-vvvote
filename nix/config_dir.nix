@@ -10,6 +10,8 @@ let
 
   backendConfig = scopedImport { inherit vars lib; } ./config.php.nix;
   backendConfigFile = pkgs.writeText "config.php" backendConfig;
+  privacyStatementFile = pkgs.writeText "privacy_statement.txt" vars.dataProtectionPolicy.default;
+  privacyStatementDeFile = pkgs.writeText "privacy_statement_de.txt" vars.dataProtectionPolicy.de;
 
   privateKeydir =
     if (!(isString vars.privateKeydir) && vars.copyPrivateKeysToStore == false) then
@@ -37,8 +39,11 @@ let
 
 in pkgs.runCommand "vvvote-backend-config" {} (''
   mkdir $out
-  # linking doesn't work because PHP uses the location of the real file for __DIR__
+  # linking doesn't work for the config file because PHP uses the location of
+  # the real file for __DIR__.
   cp ${backendConfigFile} $out/config.php
+  ln -s ${privacyStatementFile} $out/privacy_statement.txt
+  ln -s ${privacyStatementDeFile} $out/privacy_statement_de.txt
   # not needed in production, but helpful for debugging
   ln -s ${pkgs.writeText "vars.json" (builtins.toJSON varsForDebugOutput)} $out/vars.json
 ''
