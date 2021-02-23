@@ -107,7 +107,7 @@ $config = array (
 						// for the second Vvvote server because no interaction is allowed).
 
 						// default scopes requested for keycloak: "eligible user_roles verified" but you can set different scopes by uncommenting the following line
-						//'scope' => 'eligible user_roles verified ekklesia_notify',
+						'scope' => 'eligible user_roles verified ekklesia_notify',
 
 						// You must use SSL/TLS here as the oAuth2 security relies on it.
 						// In order to do so:
