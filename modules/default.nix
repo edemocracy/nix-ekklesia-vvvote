@@ -24,7 +24,7 @@ let
     backendConfigDir = pkgs.callPackage ../nix/config_dir.nix {
       inherit vars;
     };
-    compileWebclient = cfg.compileWebclient && cfg.settings.privateKeydir != null;
+    inherit (cfg) compileWebclient;
     pidfile = "/run/vvvote/vvvote_backend.pid";
   };
 
