@@ -51,7 +51,7 @@ in pkgs.runCommand "vvvote-backend-config" {} (''
   key_dir=$out/voting-keys
   mkdir $key_dir
   # copy public server keys (optional: pass them as argument?)
-  ${lib.concatMapStringsSep "\n" (k: "cp ${k} $key_dir") publicKeyFiles}
+  ${lib.concatMapStringsSep "\n" (k: "ln -s ${k} $key_dir") publicKeyFiles}
 ''
 + lib.optionalString (vars.privateKeydir != null) ''
   # link private keys

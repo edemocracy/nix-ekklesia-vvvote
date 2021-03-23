@@ -98,15 +98,21 @@ in {
       };
 
       permissionPrivateKeyFile = mkOption {
-        type = types.str;
-        description = "Path to file containing the private key (if server acts as permission server)";
-        example = "/var/lib/vvvote/PermissionServer1.privatekey.pem.php";
+        type = with types; nullOr str;
+        description = "File name containing the private key relative to privateKeydir (if server acts as permission server)";
+        example = "PermissionServer1.privatekey.pem.php";
+      };
+
+      privateKeydir = mkOption {
+        type = with types; nullOr str;
+        description = "Path to directory containing the private keys.";
+        example = "/var/lib/vvvote/private-keys";
       };
 
       tallyPrivateKeyFile = mkOption {
-        type = types.str;
-        description = "Path to file containing the private key (if server acts as tally server)";
-        example = "/var/lib/vvvote/PermissionServer1.privatekey.pem.php";
+        type = with types; nullOr str;
+        description = "File name containing the private key relative to privateKeydir (if server acts as tally server)";
+        example = "PermissionServer1.privatekey.pem.php";
       };
 
       settings = mkOption {
@@ -226,10 +232,12 @@ in {
           ${replaceSecret "$cfgdir/config.php" "notifyClientSecret" cfg.notifyClientSecretFile}
         ''
         + lib.optionalString cfg.settings.isTallyServer ''
-          cp ${cfg.tallyPrivateKeyFile} $keydir/TallyServer${toString serverNumber}.privatekey.pem.php
+          cp ${cfg.privateKeydir}/${cfg.tallyPrivateKeyFile} \
+            $keydir/TallyServer${toString serverNumber}.privatekey.pem.php
         ''
         + lib.optionalString cfg.settings.isPermissionServer ''
-          cp ${cfg.permissionPrivateKeyFile} $keydir/PermissionServer${toString serverNumber}.privatekey.pem.php
+          cp ${cfg.privateKeydir}/${cfg.permissionPrivateKeyFile} \
+            $keydir/PermissionServer${toString serverNumber}.privatekey.pem.php
         '';
 
         script = ''
