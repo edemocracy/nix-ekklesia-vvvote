@@ -48,6 +48,7 @@ in {
       };
       webclientHostname = mkOption {
         type = types.str;
+        default = "localhost";
       };
 
       user = mkOption {
