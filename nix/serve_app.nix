@@ -25,7 +25,7 @@ in pkgs.stdenv.mkDerivation {
   name = "nix-ekklesia-vvvote";
   # only run needed phases because unpack fails when src isn't given
   phases = [ "installPhase" "fixupPhase" ];
-  passthru = { inherit listen; };
+  passthru = { inherit listen; inherit (deps) adminscript; };
   installPhase = ''
     mkdir -p $out/bin
     ln -s ${vvvote}/backend $out

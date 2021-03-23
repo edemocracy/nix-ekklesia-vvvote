@@ -24,7 +24,7 @@ let
 
 
 in rec {
-  inherit apacheHttpd pkgs php mylib vvvote;
+  inherit apacheHttpd pkgs php mylib vvvote adminscript;
   inherit (pkgs) lib glibcLocales;
 
   shellTools = [

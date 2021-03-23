@@ -198,6 +198,11 @@ in {
     })
 
     (lib.mkIf cfg.enableBackend {
+
+      environment.systemPackages = [
+        serveApp.adminscript
+      ];
+
       services.nginx.virtualHosts."${cfg.backendHostname}".locations =
         nginxConfig.backendLocation serveApp cfg.backendPrefix;
 
