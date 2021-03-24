@@ -4,7 +4,6 @@ with builtins;
 let
   sources_ = if (sources == null) then import ./sources.nix else sources;
   pkgs = import sources_.nixpkgs { };
-  niv = (import sources_.niv { }).niv;
   mylib = pkgs.callPackage ./mylib.nix {};
   apacheHttpd = pkgs.callPackage ./apache.nix {};
   php = (pkgs.php74.override { inherit apacheHttpd; }).withExtensions ({ enabled, all }:
@@ -28,7 +27,7 @@ in rec {
   inherit (pkgs) lib glibcLocales;
 
   shellTools = [
-    niv
+    pkgs.niv
     php
     pkgs.entr
     adminscript
