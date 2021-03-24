@@ -6,7 +6,7 @@ with builtins;
 let
   deps = import ./deps.nix { inherit sources; };
   inherit (deps) pkgs;
-  lib = pkgs.lib;
+  inherit (pkgs) lib;
 
   backendConfig = scopedImport { inherit vars lib; } ./config.php.nix;
   backendConfigFile = pkgs.writeText "config.php" backendConfig;
@@ -14,7 +14,7 @@ let
   privacyStatementDeFile = pkgs.writeText "privacy_statement_de.txt" vars.dataProtectionPolicy.de;
 
   privateKeydir =
-    if (!(isString vars.privateKeydir) && vars.copyPrivateKeysToStore == false) then
+    if (isPath vars.privateKeydir && vars.copyPrivateKeysToStore == false) then
       throw ''
         privateKeydir cannot be a path (without quotes) when copyPrivateKeysToStore is not enabled!
         Paths are copied to the Nix store which may be a security risk!
@@ -25,12 +25,12 @@ let
         If you really want to copy the keys to the Nix store, set copyPrivateKeysToStore = true.''
     else vars.privateKeydir;
 
-  publicKeydir = vars.publicKeydir;
+  inherit (vars) publicKeydir;
 
-  permissionPublicKeyFiles = if (vars.publicKeydir == null) then [] else
+  permissionPublicKeyFiles = if (publicKeydir == null) then [] else
     map (i: "${publicKeydir}/PermissionServer${toString i}.publickey.pem") (lib.range 1 (length vars.backendUrls));
 
-  tallyPublicKeyFiles = if (vars.publicKeydir == null) then [] else
+  tallyPublicKeyFiles = if (publicKeydir == null) then [] else
     map (i: "${publicKeydir}/TallyServer${toString i}.publickey.pem") vars.tallyServerNumbers;
 
   publicKeyFiles = permissionPublicKeyFiles ++ tallyPublicKeyFiles;
@@ -47,16 +47,16 @@ in pkgs.runCommand "vvvote-backend-config" {} (''
   # not needed in production, but helpful for debugging
   ln -s ${pkgs.writeText "vars.json" (builtins.toJSON varsForDebugOutput)} $out/vars.json
 ''
-+ lib.optionalString (vars.publicKeydir != null) ''
++ lib.optionalString (publicKeydir != null) ''
   key_dir=$out/voting-keys
   mkdir $key_dir
   # copy public server keys (optional: pass them as argument?)
   ${lib.concatMapStringsSep "\n" (k: "ln -s ${k} $key_dir") publicKeyFiles}
 ''
-+ lib.optionalString (vars.privateKeydir != null) ''
++ lib.optionalString (privateKeydir != null) ''
   # link private keys
   ln -s ${privateKeydir}/PermissionServer${toString vars.serverNumber}.privatekey.pem.php $key_dir
 ''
-+ lib.optionalString (vars.privateKeydir != null && vars.isTallyServer) ''
++ lib.optionalString (privateKeydir != null && vars.isTallyServer) ''
   ln -s ${privateKeydir}/TallyServer${toString vars.serverNumber}.privatekey.pem.php $key_dir
 '')
