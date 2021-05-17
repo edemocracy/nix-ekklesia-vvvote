@@ -3,7 +3,7 @@
 # Apache HTTPD 2.5 supports logging to journald via the systemd API.
 # I wanted to disable LDAP but build fails without is (disable module?).
 
-{ stdenv, autoconf, which, fetchFromGitHub, fetchurl, systemd, perl, zlib, apr, aprutil, pcre, libiconv, lynx
+{ stdenv, lib, autoconf, which, fetchFromGitHub, fetchurl, systemd, perl, zlib, apr, aprutil, pcre, libiconv, lynx
 , proxySupport ? false
 , sslSupport ? false, openssl
 , http2Support ? false, nghttp2
@@ -14,7 +14,7 @@
 }:
 
 let
-  inherit (stdenv.lib) optional;
+  inherit (lib) optional;
 
   aprutilSrc = fetchTarball {
     url = "https://www-eu.apache.org/dist/apr/apr-util-1.6.1.tar.bz2";
@@ -65,7 +65,7 @@ stdenv.mkDerivation rec {
   '';
 
   # Required for ‘pthread_cancel’.
-  NIX_LDFLAGS = stdenv.lib.optionalString (!stdenv.isDarwin) "-lgcc_s";
+  NIX_LDFLAGS = lib.optionalString (!stdenv.isDarwin) "-lgcc_s";
 
   configureFlags = [
     "--with-apr=${apr.dev}"
@@ -80,19 +80,19 @@ stdenv.mkDerivation rec {
     "--enable-imagemap"
     "--enable-cgi"
     "--includedir=${placeholder "dev"}/include"
-    (stdenv.lib.enableFeature proxySupport "proxy")
-    (stdenv.lib.enableFeature sslSupport "ssl")
-    (stdenv.lib.withFeatureAs libxml2Support "libxml2" "${libxml2.dev}/include/libxml2")
+    (lib.enableFeature proxySupport "proxy")
+    (lib.enableFeature sslSupport "ssl")
+    (lib.withFeatureAs libxml2Support "libxml2" "${libxml2.dev}/include/libxml2")
     "--docdir=$(doc)/share/doc"
 
-    (stdenv.lib.enableFeature brotliSupport "brotli")
-    (stdenv.lib.withFeatureAs brotliSupport "brotli" brotli)
+    (lib.enableFeature brotliSupport "brotli")
+    (lib.withFeatureAs brotliSupport "brotli" brotli)
 
-    (stdenv.lib.enableFeature http2Support "http2")
-    (stdenv.lib.withFeature http2Support "nghttp2")
+    (lib.enableFeature http2Support "http2")
+    (lib.withFeature http2Support "nghttp2")
 
-    (stdenv.lib.enableFeature luaSupport "lua")
-    (stdenv.lib.withFeatureAs luaSupport "lua" lua5)
+    (lib.enableFeature luaSupport "lua")
+    (lib.withFeatureAs luaSupport "lua" lua5)
   ];
 
   enableParallelBuilding = true;
@@ -110,11 +110,11 @@ stdenv.mkDerivation rec {
     inherit apr aprutil sslSupport proxySupport ldapSupport;
   };
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Apache HTTPD, the world's most popular web server";
     homepage    = "http://httpd.apache.org/";
     license     = licenses.asl20;
-    platforms   = stdenv.lib.platforms.linux ++ stdenv.lib.platforms.darwin;
+    platforms   = lib.platforms.linux ++ lib.platforms.darwin;
     maintainers = with maintainers; [ lovek323 peti ];
   };
 }
