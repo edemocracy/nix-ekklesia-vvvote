@@ -1,11 +1,8 @@
-{ pkgs, lib, php, vvvoteSrc, disableAnonServer ? false }:
+{ pkgs, lib, php, vvvoteSrc }:
 
 pkgs.stdenv.mkDerivation {
   name = "vvvote";
   src = vvvoteSrc;
-
-  patches =
-    lib.optional disableAnonServer ./0001-disable-anon-server.patch;
 
   dontBuild = true; # nothing to build for this PHP / JS app ;)
   installPhase = ''

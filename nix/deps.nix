@@ -13,7 +13,6 @@ let
   vvvote = pkgs.callPackage ./vvvote.nix {
     inherit php;
     vvvoteSrc = sources_.vvvote;
-    disableAnonServer = true;
   };
 
   adminscript = pkgs.writeScriptBin "vvvote-admin.sh" ''

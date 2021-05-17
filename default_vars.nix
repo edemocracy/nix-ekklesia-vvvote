@@ -28,6 +28,8 @@ self: {
   '';
 
   tallyServerNumbers = [ 1 2 ]; # which server acts as tally server? (starts at 1!)
+  anonymizerUrl = "http://anonymouse.org/cgi-bin/anon-www_de.cgi/";
+  voteScheme = "http";
   votePort = 80;
   webclientUrl = "http://localhost/vvvote";
   useAnonServer = true;

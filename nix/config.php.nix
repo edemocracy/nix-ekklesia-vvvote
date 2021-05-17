@@ -15,16 +15,26 @@ $config = array (
 		// This value must be the same on all Vvvote (permission) servers.
 		'pServerUrlBases' => ${toPhpStringArray backendUrls},
 
-		// TCP-Port of the Vvvote (tally) servers (currently only the first one is used)
+		// How to reach the Vvvote tally servers.
 		// Do not use SSL/TLS here. Why? The Vvvote-client uses an anonymizing service for
 		// sending the vote. The anonymizing service strips off the browser's fingerprint
 		// which cannot be done in an SSL/TLS connection. Anyway, the transmitted data itself
 		// is encrypted by the Vvvote client using RSA/AES encryption
-		// uncomment, if you need to change it..
-		// This value must be the same on all Vvvote (permission) servers.
-		// defaults to 'tServerStoreVotePorts' => array ('80', '80'),
-		'tServerStoreVotePorts' => array (${toPhpString votePort}, ${toPhpString votePort}),
+		// These values must be the same on all Vvvote (permission) servers.
+		// Defaults to http and port 80 and the same host and path provided by pServerUrlBases.
+		// Uncomment, the part you need to change. Everything else will be taken from the defaults.
+		'tServerStoreVoteUrls' => array(
+				array( // first tally server
+						'scheme' => '${voteScheme}',
+						'port' => ${toPhpString votePort}
+				),
+				array( // second tally server
+						'scheme' => '${voteScheme}',
+						'port' => ${toPhpString votePort}
+				)
+		),
 
+		'anonymizerUrl' => ${toPhpString anonymizerUrl},
 
 		// URL to your organisations's website
 		// will be used as link for your organisation's logo
