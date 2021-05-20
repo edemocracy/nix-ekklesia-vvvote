@@ -27,10 +27,6 @@ $config = array (
 				array( // first tally server
 						'scheme' => '${voteScheme}',
 						'port' => ${toPhpString votePort}
-				),
-				array( // second tally server
-						'scheme' => '${voteScheme}',
-						'port' => ${toPhpString votePort}
 				)
 		),
 
