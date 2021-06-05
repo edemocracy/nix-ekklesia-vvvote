@@ -312,6 +312,7 @@ in {
 
       users.users.vvvote = {
         home = "/run/vvvote";
+        isSystemUser = true;
       };
 
       users.groups.vvvote = { };
