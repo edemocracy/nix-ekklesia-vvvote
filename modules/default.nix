@@ -222,7 +222,7 @@ in {
          replaceDebug = lib.optionalString cfg.settings.debug "-vv";
          replaceSecret = file: var: secretFile:
           "${pkgs.replace}/bin/replace-literal -m 1 ${replaceDebug} -f -e @${var}@ $(< ${secretFile}) ${file}";
-          serverNumber = cfg.settings.serverNumber;
+          inherit (cfg.settings) serverNumber;
         in ''
           cfgdir=$RUNTIME_DIRECTORY
           keydir=$cfgdir/voting-keys
@@ -313,6 +313,7 @@ in {
       users.users.vvvote = {
         home = "/run/vvvote";
         isSystemUser = true;
+        group = "vvvote";
       };
 
       users.groups.vvvote = { };
