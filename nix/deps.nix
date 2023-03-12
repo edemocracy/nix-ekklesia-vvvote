@@ -7,7 +7,7 @@ let
   mylib = pkgs.callPackage ./mylib.nix {};
   apacheHttpd = pkgs.callPackage ./apache.nix {};
   php = (pkgs.php74.override { inherit apacheHttpd; }).withExtensions ({ enabled, all }:
-    with all; [ session pdo_mysql gmp json curl ]
+    with all; [ session pdo_mysql json  gmp curl ]
   );
 
   vvvote = pkgs.callPackage ./vvvote.nix {

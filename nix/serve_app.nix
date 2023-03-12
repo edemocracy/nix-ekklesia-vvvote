@@ -29,6 +29,8 @@ in pkgs.stdenv.mkDerivation {
   installPhase = ''
     mkdir -p $out/bin
     ln -s ${vvvote}/backend $out
+    mkdir -p $out/public/api/v1/
+    cp ${vvvote}/public/api/v1/index.php $out/public/api/v1
     # not needed in production, but helpful for debugging
     ln -s ${backendConfigDir} $out/config
 

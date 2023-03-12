@@ -42,7 +42,7 @@ AddHandler type-map var
 AddType application/x-httpd-php .php
 
 ErrorLog ${errorLog}
-LogLevel notice
+LogLevel trace3
 LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
 CustomLog ${customLog} combined
 
@@ -51,6 +51,13 @@ TraceEnable off
 Listen ${listen} http
 
 <VirtualHost ${listen}>
-  DocumentRoot "backend"
+  DocumentRoot "public"
 </VirtualHost>
+
+<Directory />
+  Options FollowSymLinks
+  RewriteEngine On
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)api/v1/(.*)$  $1/api/v1/index.php?/$2 [QSA,END]
+  </Directory>
 ''
