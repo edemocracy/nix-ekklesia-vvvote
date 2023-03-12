@@ -17,13 +17,13 @@ let
   inherit (lib) optional;
 
   aprutilSrc = fetchTarball {
-    url = "https://www-eu.apache.org/dist/apr/apr-util-1.6.1.tar.bz2";
-    sha256 = "16yj12vvp0snq1l61vffl5lgcwc2gznmzbmas5h36n759rrw48ic";
+    url = "https://www-eu.apache.org/dist/apr/apr-util-1.6.3.tar.bz2";
+    sha256 = "171qkx8z04fq55rlklzw17saa127m912a5yfafskpqqzjbcf2z0z";
   };
 
   aprSrc = fetchTarball {
-    url = "https://www-eu.apache.org/dist/apr/apr-1.7.0.tar.bz2";
-    sha256 = "1l1xc7lc2was6z5hq4zrrycivk56cjds0kc19q3mgmikarcj4x5y";
+    url = "https://www-eu.apache.org/dist/apr/apr-1.7.2.tar.bz2";
+    sha256 = "1zjgz4w1pwq1wvdpadwx9vk450hr33x01lzbw97yzm53iszsqqhh";
   };
 in
 
