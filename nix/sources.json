@@ -1,14 +1,14 @@
 {
     "nixpkgs": {
-        "branch": "nixos-unstable",
+        "branch": "nixos-22.05",
         "description": "Nix Packages collection",
         "homepage": null,
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f5e8bdd07d1afaabf6b37afc5497b1e498b8046f",
-        "sha256": "1fmwkb2wjfrpx8fis4x457vslam0x8vqlpfwqii6p9vm33dyxhzk",
+        "rev": "0874168639713f547c05947c76124f78441ea46c",
+        "sha256": "0gw5l5bj3zcgxhp7ki1jafy6sl5nk4vr43hal94lhi15kg2vfmfy",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/f5e8bdd07d1afaabf6b37afc5497b1e498b8046f.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/0874168639713f547c05947c76124f78441ea46c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "vvvote": {
@@ -17,10 +17,10 @@
         "homepage": "http://www.vvvote.de",
         "owner": "vvvote",
         "repo": "vvvote",
-        "rev": "6407957d72e06705a6f2a1a715c1d0c6aa65de09",
-        "sha256": "0qy5cbxqpkc8pxijddpbldwzscnnizrsvip9f7v8piza8ayfkylf",
+        "rev": "3111749be0333506ce6ff65974b2a90f9cf52abb",
+        "sha256": "1w0yhm9wy4nl9xvg5mzkp11mfaz0fhixbi75ajb8vfw4zad654y3",
         "type": "tarball",
-        "url": "https://github.com/vvvote/vvvote/archive/6407957d72e06705a6f2a1a715c1d0c6aa65de09.tar.gz",
+        "url": "https://github.com/vvvote/vvvote/archive/3111749be0333506ce6ff65974b2a90f9cf52abb.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
