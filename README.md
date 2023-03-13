@@ -6,7 +6,10 @@ Set of Nix expressions for building and installing VVVote, intended for use with
 
 ## Quick Test Installation In Four Steps
 
-This should work on all Linux distributions and MacOS. You need the [Nix package manager](https://nixos.org/nix) (version > 1.8) and a running MySQL server.
+This should work on all Linux distributions and MacOS. You need the [Nix 
+package manager](https://nixos.org/nix) and a running MySQL server. If you don't
+have experience with Nix, start [Get Nix running on your system](https://zero-to-nix.com/start/install)
+from [Zero to Nix](https://zero-to-nix.com/).
 
 ### What Will Happen?
 
@@ -23,6 +26,8 @@ This should work on all Linux distributions and MacOS. You need the [Nix package
 
 The last lines should show two running Apache instances.
 You can visit `http://localhost:10002/getclient.php` now.
+
+Note that creating votings doesn't work right now.
 
 ## Nix Files In This Repo
 
