@@ -14,6 +14,7 @@ let
   vars =
     lib.recursiveUpdate
       varsInsecure {
+        db.password = "@databasePassword@";
         oauth.clientSecret = "@oauthClientSecret@";
         oauth.notifyClientSecret = "@notifyClientSecret@";
       };
@@ -83,6 +84,11 @@ in {
         type = types.str;
         default = "127.0.0.1";
         description = "Address for backend app server";
+      };
+
+      databasePasswordFile = mkOption {
+        type = with types; nullOr str;
+        description = "Optional path to file containing the secret for the MySQL database";
       };
 
       notifyClientSecretFile = mkOption {
@@ -228,8 +234,12 @@ in {
           keydir=$cfgdir/voting-keys
           cp -Lr ${serveApp}/config/* $cfgdir
           chmod u+w -R $cfgdir
+
           ${replaceSecret "$cfgdir/config.php" "oauthClientSecret" cfg.oauthClientSecretFile}
           ${replaceSecret "$cfgdir/config.php" "notifyClientSecret" cfg.notifyClientSecretFile}
+        ''
+        + lib.optionalString (cfg.databasePasswordFile != null) ''
+          ${replaceSecret "$cfgdir/config.php" "databasePassword" cfg.databasePasswordFile}
         ''
         + lib.optionalString cfg.settings.isTallyServer ''
           cp ${cfg.privateKeydir}/${cfg.tallyPrivateKeyFile} \
