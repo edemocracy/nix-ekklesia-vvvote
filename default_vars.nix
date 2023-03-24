@@ -55,6 +55,7 @@ self: {
     serverDesc = "ID Server";
     clientIds =  [ "vvvote" "vvvote2" ];
     clientSecret = "invalidClientSecret";
+    extraScopes = [];
     notifyClientId = "example_app";
     notifyClientSecret = "invalidNotifyClientSecret";
     notifyUrl = "https://notify.invalid/freeform_message";
